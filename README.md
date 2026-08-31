@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# kevinpei.dev
 
-## Getting Started
+Personal site. Next.js 16 (App Router) · Tailwind v4 · fully static.
 
-First, run the development server:
+## Editing content
+
+**All copy lives in [`src/content.ts`](src/content.ts).** Nothing else needs touching for
+routine updates — the page reads from it. Sections: `site`, `intro`, `links`, `work`,
+`projects`, `education`, `skills`.
+
+Set `site.url` once the domain is registered — it drives the canonical tag, sitemap,
+`robots.txt`, and the OG image footer.
+
+The résumé PDF is served from `public/Kevin_Pei_Resume.pdf`. Replace the file in place
+to update it; the URL stays the same.
+
+## Develop
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Requires `vercel login` first (interactive — must be run by hand).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx vercel@latest --prod
+```
 
-## Learn More
+Then add the domain:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx vercel@latest domains add kevinpei.dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Vercel prints the nameservers or A/CNAME records to set at the registrar.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## What's wired up
 
-## Deploy on Vercel
+- `src/app/opengraph-image.tsx` — 1200×630 link-preview card, generated at build
+- `src/app/icon.svg` — favicon (K monogram)
+- `src/app/robots.ts`, `src/app/sitemap.ts` — crawler basics
+- JSON-LD `Person` schema in `src/app/page.tsx` — helps search engines tie the name
+  to this site rather than to the other Kevin Pei who holds `kevinpei.com`
+- Light/dark via `prefers-color-scheme`, tokens in `src/app/globals.css`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Known refinements for later
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The OG image falls back to a system sans; loading Instrument Serif into
+  `ImageResponse` would match the site's display face.
+- `site.status` ("Open to Summer 2027 internships") is an assumption — reword or
+  delete it in `src/content.ts`.
+- Projects have no `href`. Add repo or demo links and the cards become clickable
+  automatically.
