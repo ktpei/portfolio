@@ -262,10 +262,20 @@ function ProjectCard({ project }: { project: Project }) {
       {...(project.href
         ? { href: project.href, target: "_blank", rel: "noreferrer" }
         : {})}
-      className="block rounded-lg border border-rule bg-paper-raised p-5 transition-colors hover:border-accent/40 sm:p-6"
+      className="group block rounded-lg border border-rule bg-paper-raised p-5 transition-colors hover:border-accent/40 sm:p-6"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 className="text-lg font-medium tracking-tight">{project.name}</h3>
+        <h3 className="flex items-baseline gap-1.5 text-lg font-medium tracking-tight">
+          {project.name}
+          {project.href ? (
+            <span
+              aria-hidden
+              className="font-mono text-xs text-ink-faint transition-all group-hover:translate-x-0.5 group-hover:text-accent"
+            >
+              ↗
+            </span>
+          ) : null}
+        </h3>
         <span className="ml-auto shrink-0 font-mono text-xs text-ink-faint tabular-nums">
           {project.period}
         </span>
@@ -294,11 +304,18 @@ function ProjectCard({ project }: { project: Project }) {
         ))}
       </ul>
 
-      <p className="mt-4 flex flex-wrap gap-x-2 gap-y-1 font-mono text-[0.7rem] text-ink-faint">
-        {project.stack.map((tech) => (
-          <span key={tech}>{tech}</span>
-        ))}
-      </p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 font-mono text-[0.7rem] text-ink-faint">
+        <p className="flex flex-wrap gap-x-2 gap-y-1">
+          {project.stack.map((tech) => (
+            <span key={tech}>{tech}</span>
+          ))}
+        </p>
+        {project.href ? (
+          <span className="ml-auto shrink-0 transition-colors group-hover:text-accent">
+            {project.href.replace(/^https:\/\/(www\.)?/, "")}
+          </span>
+        ) : null}
+      </div>
     </Wrapper>
   );
 }

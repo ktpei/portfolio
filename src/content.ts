@@ -98,6 +98,7 @@ export const projects: Project[] = [
       "Agentic loop with retry logic, state recovery, and stall detection for reliable behavior across multi-step e-commerce flows.",
     ],
     stack: ["TypeScript", "Next.js", "BullMQ", "PostgreSQL", "Docker"],
+    href: "https://github.com/ktpei/persona-lab",
   },
   {
     name: "AgentOS",
@@ -110,6 +111,7 @@ export const projects: Project[] = [
       "Private Docker bridge network for task dispatch between the platform and worker containers.",
     ],
     stack: ["Python", "FastAPI", "Docker", "Next.js", "Supabase", "OAuth"],
+    href: "https://github.com/ktpei/AgentOS",
   },
   {
     name: "Compco",
