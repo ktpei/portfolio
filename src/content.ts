@@ -3,7 +3,8 @@
 // ─────────────────────────────────────────────────────────────
 
 export const site = {
-  // Change this once the domain is registered.
+  // Registered domain. Drives the canonical tag, sitemap, robots.txt, and the
+  // footer of the OG preview card — change here and everything follows.
   url: "https://kevinpei.dev",
   name: "Kevin Pei",
   role: "Software Engineer",
