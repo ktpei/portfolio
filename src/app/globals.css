@@ -6,9 +6,9 @@
   --paper-raised: #f5f1ea;
   --ink: #191512;
   --ink-muted: #6b6259;
-  --ink-faint: #9a9188;
+  --ink-faint: #756b61;
   --rule: #e4ded3;
-  --accent: #b0461f;
+  --accent: #a9411c;
   --accent-quiet: #f0e2d9;
 }
 
@@ -18,7 +18,7 @@
     --paper-raised: #191614;
     --ink: #f2ede5;
     --ink-muted: #a09689;
-    --ink-faint: #6f665c;
+    --ink-faint: #a3988b;
     --rule: #2a2521;
     --accent: #e8794a;
     --accent-quiet: #2b1d16;
@@ -47,6 +47,77 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  color-scheme: light dark;
+  scroll-behavior: smooth;
+}
+
+[id] {
+  scroll-margin-top: 2rem;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50;
+  transform: translateY(calc(-100% - 2rem));
+  padding: 0.75rem 1rem;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.button-primary, .button-secondary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.button-primary {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.button-primary:hover {
+  background: var(--ink-muted);
+  border-color: var(--ink-muted);
+}
+
+.button-secondary:hover {
+  background: var(--paper-raised);
+  border-color: var(--ink-faint);
+}
+
+.project-link {
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.project-link:hover, .project-link:focus-within {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
 ::selection {
   background: var(--accent);
   color: var(--paper);
@@ -60,12 +131,20 @@ body {
   background-size: 100% 1px;
   transition: background-size 0.25s ease;
 }
-.link-draw:hover {
+.link-draw:hover, .link-draw:focus-visible {
   background-size: 0 1px;
   background-position: 100% 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .project-link:hover, .project-link:focus-within {
+    transform: none;
+  }
+
   *,
   *::before,
   *::after {

@@ -11,20 +11,30 @@ export const site = {
   location: "New York, NY",
   // Remove or reword this line if it doesn't match where you are.
   status: "Open to Summer 2027 internships",
-  resume: "/Kevin_Pei_Resume.pdf",
 };
 
 export const intro = [
-  "I'm a computer science student at NYU who builds backend systems and the infrastructure that agents run on.",
-  "Right now I'm at Korr Insurtech, where I cut a core document workflow's load time by 65% and folded 60+ Lambda functions into a single service — dropping provisioned memory 93% and monthly infrastructure cost 29%. I also lead server development at NYU's High Speed Research Lab on Corelink, an open-source transport framework for real-time applications.",
-  "Outside of work I build agent tooling, which has won a couple of hackathons.",
+  "I build backend systems and the infrastructure that agents run on.",
+  "Computer science at NYU. Currently shipping at Korr Insurtech and leading server development at NYU's High Speed Research Lab. Outside of work, I build award-winning agent tooling.",
+];
+
+export const highlights = [
+  { value: "65%", label: "Less document load time", context: "At Korr Insurtech", href: "#work" },
+  { value: "29%", label: "Lower infrastructure cost", context: "At Korr Insurtech", href: "#work" },
+  { value: "2×", label: "First-place hackathon wins", context: "PersonaLab & AgentOS", href: "#projects" },
+];
+
+export const navigation = [
+  { label: "Idea board", href: "/board" },
+  { label: "Projects", href: "#projects" },
+  { label: "Work", href: "#work" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export const links = [
   { label: "Email", href: "mailto:kevinxpei@gmail.com", display: "kevinxpei@gmail.com" },
   { label: "GitHub", href: "https://github.com/ktpei", display: "github.com/ktpei" },
   { label: "LinkedIn", href: "https://linkedin.com/in/kevin-pei", display: "linkedin.com/in/kevin-pei" },
-  { label: "Resume", href: "/Kevin_Pei_Resume.pdf", display: "PDF" },
 ];
 
 export type Entry = {

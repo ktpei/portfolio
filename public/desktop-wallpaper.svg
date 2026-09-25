@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1200" viewBox="0 0 1920 1200" fill="none">
+<defs>
+<linearGradient id="sky" x1="1040" y1="0" x2="1000" y2="1000" gradientUnits="userSpaceOnUse"><stop stop-color="#a8cbd0"/><stop offset=".43" stop-color="#dde5d6"/><stop offset=".73" stop-color="#f7dab6"/><stop offset="1" stop-color="#eeaf91"/></linearGradient>
+<linearGradient id="far" x1="1300" y1="370" x2="1700" y2="1050" gradientUnits="userSpaceOnUse"><stop stop-color="#efba9d"/><stop offset=".5" stop-color="#c78478"/><stop offset="1" stop-color="#9a717d"/></linearGradient>
+<linearGradient id="middle" x1="720" y1="450" x2="1200" y2="1200" gradientUnits="userSpaceOnUse"><stop stop-color="#598f99"/><stop offset=".55" stop-color="#357484"/><stop offset="1" stop-color="#25556c"/></linearGradient>
+<linearGradient id="front" x1="150" y1="730" x2="900" y2="1320" gradientUnits="userSpaceOnUse"><stop stop-color="#215c6c"/><stop offset=".55" stop-color="#1d465d"/><stop offset="1" stop-color="#183449"/></linearGradient>
+<linearGradient id="rim" x1="210" y1="600" x2="960" y2="1170" gradientUnits="userSpaceOnUse"><stop stop-color="#96b1aa"/><stop offset="1" stop-color="#3d6d7b" stop-opacity="0"/></linearGradient>
+</defs>
+<path fill="url(#sky)" d="M0 0h1920v1200H0z"/>
+<path fill="url(#far)" d="M600 1200c235-291 248-449 472-520 149-47 230-132 329-267 128-174 327-130 519-181v968H600Z"/>
+<path fill="#f6ccb0" fill-opacity=".45" d="M952 777c184-149 237-234 332-302 151-107 286-163 636-243-271 83-461 184-529 253-146 149-205 174-439 292Z"/>
+<path fill="url(#middle)" d="M0 493c160-51 251-83 387-7 180 101 274 365 494 398 282 42 438-124 652-72 143 35 271 111 387 97v291H0V493Z"/>
+<path fill="url(#rim)" d="M0 493c160-51 251-83 387-7 180 101 274 365 494 398-227-11-335-253-503-366C232 420 115 489 0 531v-38Z"/>
+<path fill="url(#front)" d="M0 638c188 18 307 105 477 292 171 188 382 223 626 192 290-37 460-75 817 32v46H0V638Z"/>
+<path stroke="#b5c8bc" stroke-opacity=".2" stroke-width="2" d="M0 639c188 18 307 105 477 292 171 188 382 223 626 192 290-37 460-75 817 32"/>
+</svg>
