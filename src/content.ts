@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-// Everything on the site is edited from this one file.
-// ─────────────────────────────────────────────────────────────
-
 export const site = {
   // Registered domain. Drives the canonical tag, sitemap, robots.txt, and the
   // footer of the OG preview card — change here and everything follows.
@@ -9,27 +5,16 @@ export const site = {
   name: "Kevin Pei",
   role: "Software Engineer",
   location: "New York, NY",
-  // Remove or reword this line if it doesn't match where you are.
   status: "Open to Summer 2027 internships",
 };
 
-export const intro = [
-  "I build backend systems and the infrastructure that agents run on.",
-  "Computer science at NYU. Currently shipping at Korr Insurtech and leading server development at NYU's High Speed Research Lab. Outside of work, I build award-winning agent tooling.",
-];
-
-export const highlights = [
-  { value: "65%", label: "Less document load time", context: "At Korr Insurtech", href: "#work" },
-  { value: "29%", label: "Lower infrastructure cost", context: "At Korr Insurtech", href: "#work" },
-  { value: "2×", label: "First-place hackathon wins", context: "PersonaLab & AgentOS", href: "#projects" },
-];
-
-export const navigation = [
-  { label: "Idea board", href: "/board" },
-  { label: "Projects", href: "#projects" },
-  { label: "Work", href: "#work" },
-  { label: "Contact", href: "#contact" },
-];
+export const intro = {
+  title: "hey, I’m Kevin.",
+  paragraphs: [
+    "I build agentic systems and also small projects for the people around me",
+    "Computer science at NYU. Currently leading server development at NYU's High Speed Research Lab.",
+  ],
+};
 
 export const links = [
   { label: "Email", href: "mailto:kevinxpei@gmail.com", display: "kevinxpei@gmail.com" },
@@ -41,13 +26,21 @@ export type Entry = {
   role: string;
   org: string;
   href?: string;
-  place: string;
+  place?: string;
   period: string;
   current?: boolean;
   points: string[];
 };
 
 export const work: Entry[] = [
+  {
+    role: "Software Engineer (Contract)",
+    org: "ProvenanceXL",
+    href: "https://www.provenancexl.com/",
+    period: "Sep 2026 — Present",
+    current: true,
+    points: [],
+  },
   {
     role: "Software Engineer Intern",
     org: "Korr Insurtech",
@@ -142,6 +135,11 @@ export const education = {
   degree: "B.S. Computer Science, Data Science minor",
   detail: "GPA 3.83 / 4.0",
   period: "Expected May 2028",
+};
+
+export const highSchool = {
+  school: "Shanghai High School International Division",
+  detail: "9 APs · 1570 SAT",
 };
 
 export const skills: { group: string; items: string[] }[] = [

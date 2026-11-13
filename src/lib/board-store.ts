@@ -1,20 +1,24 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { createHash, randomUUID } from "node:crypto";
+import { createHmac, randomUUID } from "node:crypto";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../../convex/_generated/api";
 import {
   noteColors,
   noteStatuses,
+  refreshSeedNote,
   seedNotes,
   type BoardComment,
   type BoardNote,
   type BoardSnapshot,
   type NoteColor,
   type NoteStatus,
+  type Vote,
 } from "./board";
 
 type BoardMode = BoardSnapshot["mode"];
-type StoredBoard = { initialized: true; notes: BoardNote[]; comments: BoardComment[] };
-export type NewComment = Pick<BoardComment, "noteId" | "name" | "body">;
+type StoredBoard = { initialized: true; notes: BoardNote[]; comments: BoardComment[]; votes?: Record<string, Record<string, Vote>> };
+export type NewComment = Pick<BoardComment, "noteId" | "body"> & { name?: string };
 export type NoteInput = { id?: string; title: string; body: string; color: NoteColor; status: NoteStatus };
 
 export class BoardStoreError extends Error {
@@ -45,19 +49,19 @@ function now() {
   return new Date().toISOString();
 }
 
-function cleanText(value: unknown, label: string, max: number) {
+function cleanText(value: unknown, label: string, max: number, allowEmpty = false) {
   if (typeof value !== "string") throw new BoardStoreError(`${label} is required.`);
   const trimmed = value.trim();
-  if (!trimmed) throw new BoardStoreError(`${label} is required.`);
+  if (!trimmed && !allowEmpty) throw new BoardStoreError(`${label} is required.`);
   if (trimmed.length > max) throw new BoardStoreError(`${label} must be ${max} characters or fewer.`);
   return trimmed;
 }
 
-export function validateComment(input: NewComment): NewComment {
+export function validateComment(input: NewComment): Required<NewComment> {
   if (!isSafeId(input.noteId)) throw new BoardStoreError("Invalid note ID.");
   return {
     noteId: input.noteId,
-    name: cleanText(input.name, "Name", MAX_NAME),
+    name: cleanText(input.name === undefined ? "" : input.name, "Name", MAX_NAME, true) || "Anonymous",
     body: cleanText(input.body, "Comment", MAX_COMMENT_BODY),
   };
 }
@@ -69,7 +73,7 @@ export function validateNote(input: NoteInput): NoteInput {
   return {
     ...(input.id ? { id: input.id } : {}),
     title: cleanText(input.title, "Title", MAX_TITLE),
-    body: cleanText(input.body, "Body", MAX_NOTE_BODY),
+    body: cleanText(input.body, "Description", MAX_NOTE_BODY, true),
     color: input.color,
     status: input.status,
   };
@@ -81,7 +85,11 @@ export function validateId(id: unknown) {
 }
 
 function toSnapshot(notes: BoardNote[], comments: BoardComment[], mode: BoardMode): BoardSnapshot {
-  return { notes, comments, mode };
+  return {
+    notes: notes.map(refreshSeedNote),
+    comments,
+    mode,
+  };
 }
 
 function parseStoredBoard(text: string): StoredBoard | null {
@@ -155,6 +163,7 @@ export class LocalBoardStore {
       if (note.id && !existing) throw new BoardStoreError("Note not found.", 404);
       const saved: BoardNote = {
         id: note.id ?? randomUUID(), title: note.title, body: note.body, color: note.color, status: note.status,
+        ...(existing?.score !== undefined ? { score: existing.score } : {}),
         createdAt: existing?.createdAt ?? timestamp,
         updatedAt: timestamp,
       };
@@ -170,6 +179,20 @@ export class LocalBoardStore {
       if (index === -1) throw new BoardStoreError("Note not found.", 404);
       board.notes.splice(index, 1);
       board.comments = board.comments.filter((comment) => comment.noteId !== id);
+      if (board.votes) delete board.votes[id];
+      return toSnapshot(board.notes, board.comments, "local");
+    });
+  }
+
+  setVote(noteId: string, voter: string, value: Vote): Promise<BoardSnapshot> {
+    return this.mutate((board) => {
+      const note = board.notes.find((item) => item.id === noteId);
+      if (!note) throw new BoardStoreError("Note not found.", 404);
+      board.votes ??= {};
+      const votes = Object.hasOwn(board.votes, noteId) ? board.votes[noteId] : (board.votes[noteId] = {});
+      note.score = (note.score ?? 0) + value - (votes[voter] ?? 0);
+      if (value) votes[voter] = value;
+      else delete votes[voter];
       return toSnapshot(board.notes, board.comments, "local");
     });
   }
@@ -185,100 +208,61 @@ export class LocalBoardStore {
   }
 }
 
-type SupabaseRow = Record<string, unknown>;
-
-function configuredSupabase() {
-  const url = process.env.BOARD_SUPABASE_URL?.replace(/\/$/, "");
-  const key = process.env.BOARD_SUPABASE_SERVICE_ROLE_KEY;
-  return url && key ? { url, key } : null;
+function convexSettings() {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+  if (!url) return null;
+  const siteUrl = process.env.BOARD_CONVEX_SITE_URL ?? process.env.NEXT_PUBLIC_CONVEX_SITE_URL;
+  const secret = process.env.BOARD_CONVEX_WRITE_SECRET;
+  return { url, siteUrl, secret };
 }
 
-function noteFromRow(row: SupabaseRow): BoardNote {
-  return { id: String(row.id), title: String(row.title), body: String(row.body), color: row.color as NoteColor, status: row.status as NoteStatus, createdAt: String(row.created_at), updatedAt: String(row.updated_at) };
-}
+class ConvexBoardStore {
+  constructor(private readonly settings: NonNullable<ReturnType<typeof convexSettings>>) {}
 
-function commentFromRow(row: SupabaseRow): BoardComment {
-  return { id: String(row.id), noteId: String(row.note_id), name: String(row.name), body: String(row.body), createdAt: String(row.created_at) };
-}
+  async snapshot() {
+    const client = new ConvexHttpClient(this.settings.url);
+    return client.query(api.board.snapshot);
+  }
 
-class SupabaseBoardStore {
-  private readonly settings: { url: string; key: string };
-
-  constructor(settings: { url: string; key: string }) { this.settings = settings; }
-
-  private async request(path: string, init: RequestInit = {}) {
-    const response = await fetch(`${this.settings.url}/rest/v1/${path}`, {
-      ...init,
-      headers: { apikey: this.settings.key, Authorization: `Bearer ${this.settings.key}`, "Content-Type": "application/json", ...(init.headers ?? {}) },
+  private async write(input: Record<string, unknown>) {
+    const { siteUrl, secret } = this.settings;
+    if (!siteUrl || !secret) throw new BoardStoreError("Board writes are unavailable.", 503);
+    const response = await fetch(new URL("/board/write", siteUrl), {
+      method: "POST",
+      headers: { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" },
+      body: JSON.stringify(input),
       cache: "no-store",
+      signal: AbortSignal.timeout(8000),
     });
-    if (!response.ok) throw new BoardStoreError("Board database is unavailable.", 503);
-    return response;
+    if (response.ok) return { ok: true as const };
+    if (response.status === 404 || response.status === 409 || response.status === 429) {
+      const result = await response.json();
+      throw new BoardStoreError(result.error, response.status);
+    }
+    throw new BoardStoreError("Board writes are unavailable.", 503);
   }
 
-  private async initialize() {
-    await this.request("rpc/initialize_board", {
-      method: "POST",
-      body: JSON.stringify({
-        p_notes: cloneSeeds().map((note) => ({ id: note.id, title: note.title, body: note.body, color: note.color, status: note.status, created_at: note.createdAt, updated_at: note.updatedAt })),
-      }),
-    });
+  createComment(input: NewComment, clientKey: string) {
+    const clientHash = createHmac("sha256", this.settings.secret ?? "").update(clientKey).digest("hex");
+    return this.write({ ...validateComment(input), action: "comment", id: randomUUID(), clientHash });
   }
 
-  async snapshot(): Promise<BoardSnapshot> {
-    await this.initialize();
-    const [notesResponse, commentsResponse] = await Promise.all([
-      this.request("board_notes?select=*&order=created_at.asc"),
-      // The public board intentionally exposes a bounded, newest-first window.
-      this.request("board_comments?select=*&order=created_at.desc&limit=1000"),
-    ]);
-    const notes = (await notesResponse.json() as SupabaseRow[]).map(noteFromRow);
-    const comments = (await commentsResponse.json() as SupabaseRow[]).map(commentFromRow).reverse();
-    return toSnapshot(notes, comments, "connected");
+  setVote(noteId: string, voter: string, value: Vote) {
+    const hash = createHmac("sha256", this.settings.secret ?? "").update(voter).digest("hex");
+    return this.write({ action: "vote", noteId, voter: hash, value });
   }
 
-  async createComment(input: NewComment, clientKey: string) {
-    const comment = validateComment(input);
-    await this.initialize();
-    const note = await this.request(`board_notes?id=eq.${encodeURIComponent(comment.noteId)}&select=id&limit=1`);
-    if (!(await note.json() as SupabaseRow[]).length) throw new BoardStoreError("Note not found.", 404);
-    const response = await this.request("rpc/create_board_comment", {
-      method: "POST",
-      body: JSON.stringify({
-        p_id: randomUUID(), p_note_id: comment.noteId, p_name: comment.name, p_body: comment.body,
-        p_client_hash: createHash("sha256").update(clientKey).digest("hex"),
-      }),
-    });
-    if ((await response.json()) !== true) throw new BoardStoreError("Please wait before posting another comment.", 429);
-    return this.snapshot();
-  }
-
-  async saveNote(input: NoteInput) {
+  saveNote(input: NoteInput) {
     const note = validateNote(input);
-    await this.initialize();
-    const id = note.id ?? randomUUID();
-    const existing = note.id ? (await this.request(`board_notes?id=eq.${encodeURIComponent(id)}&select=created_at`)).json() as Promise<SupabaseRow[]> : Promise.resolve([]);
-    const rows = await existing;
-    if (note.id && !rows.length) throw new BoardStoreError("Note not found.", 404);
-    const record = { title: note.title, body: note.body, color: note.color, status: note.status, updated_at: now() };
-    if (note.id) await this.request(`board_notes?id=eq.${encodeURIComponent(id)}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(record) });
-    else await this.request("board_notes", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ id, ...record }) });
-    return this.snapshot();
+    return this.write({ ...note, action: "save-note", id: note.id ?? randomUUID(), isNew: !note.id });
   }
 
-  async deleteNote(id: string) {
-    validateId(id);
-    await this.initialize();
-    const response = await this.request(`board_notes?id=eq.${encodeURIComponent(id)}`, { method: "DELETE", headers: { Prefer: "return=representation" } });
-    if (!(await response.json() as SupabaseRow[]).length) throw new BoardStoreError("Note not found.", 404);
-    return this.snapshot();
+  deleteNote(id: string) {
+    return this.write({ action: "delete-note", id: validateId(id) });
   }
 
-  async deleteComment(id: string) {
-    validateId(id);
-    const response = await this.request(`board_comments?id=eq.${encodeURIComponent(id)}`, { method: "DELETE", headers: { Prefer: "return=representation" } });
-    if (!(await response.json() as SupabaseRow[]).length) throw new BoardStoreError("Comment not found.", 404);
-    return this.snapshot();
+  deleteComment(id: string) {
+    return this.write({ action: "delete-comment", id: validateId(id) });
   }
 }
 
@@ -286,8 +270,8 @@ const localStore = new LocalBoardStore(join(process.cwd(), ".data", "board.json"
 const preview = (): BoardSnapshot => toSnapshot(cloneSeeds(), [], "preview");
 
 function activeStore() {
-  const settings = configuredSupabase();
-  if (settings) return new SupabaseBoardStore(settings);
+  const settings = convexSettings();
+  if (settings) return new ConvexBoardStore(settings);
   return process.env.NODE_ENV === "production" ? null : localStore;
 }
 
@@ -299,7 +283,16 @@ export async function getBoardSnapshot() {
 export async function createBoardComment(input: NewComment, clientKey = "anonymous") {
   const store = activeStore();
   if (!store) throw new BoardStoreError("Board is read-only in preview mode.", 503);
-  return store instanceof SupabaseBoardStore ? store.createComment(input, clientKey) : store.createComment(input);
+  return store instanceof ConvexBoardStore ? store.createComment(input, clientKey) : store.createComment(input);
+}
+
+export async function setBoardVote(noteId: unknown, voter: unknown, value: unknown) {
+  const id = validateId(noteId);
+  if (typeof voter !== "string" || !uuid.test(voter)) throw new BoardStoreError("Invalid voter.");
+  if (value !== -1 && value !== 0 && value !== 1) throw new BoardStoreError("Invalid vote.");
+  const store = activeStore();
+  if (!store) throw new BoardStoreError("Board is read-only in preview mode.", 503);
+  return store.setVote(id, voter.toLowerCase(), value);
 }
 
 export async function saveBoardNote(input: NoteInput) {

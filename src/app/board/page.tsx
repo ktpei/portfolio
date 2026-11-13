@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { Stickies } from "../stickies/stickies";
-import { BulletinBoard } from "./bulletin-board";
 
 export const metadata: Metadata = {
-  title: "The idea board",
-  description: "A little window into what Kevin Pei is thinking about building. Browse the stickies and leave a thought.",
+  title: "Idea board",
+  description: "Browse Kevin Pei’s project ideas.",
   alternates: { canonical: "/board" },
-  openGraph: { title: "Kevin’s idea board", description: "Loose ideas, works in progress, and things worth trying.", url: "/board" },
+  openGraph: { title: "Kevin’s idea board", description: "Project ideas on stickies.", url: "/board" },
 };
 
 export default function BoardPage() {
-  return <Stickies board><BulletinBoard embedded native /></Stickies>;
+  return <Stickies initialBoard />;
 }

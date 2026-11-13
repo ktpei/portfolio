@@ -1,67 +1,36 @@
 # kevinpei.dev
 
-Personal site. Next.js 16 (App Router) · Tailwind v4 · Mac Stickies portfolio + live idea board.
+Kevin Pei's personal portfolio and public Ideas Board, arranged as two macOS Stickies desktops. Start at `/` for the portfolio notes. Open the board from the right edge, the File or Window menu, or directly at `/board`.
 
-## Editing content
+## Local development
 
-**Portfolio content lives in [`src/content.ts`](src/content.ts).** Nothing else needs touching for
-routine updates — the page reads from it. Sections: `site`, `intro`, `highlights`, `navigation`, `links`, `work`,
-`projects`, `education`, `skills`.
-
-Set `site.url` once the domain is registered — it drives the canonical tag, sitemap,
-`robots.txt`, and the OG image footer.
-
-The portfolio currently displays a WIP banner. The résumé download is temporarily
-removed from the site and its public assets.
-
-## Develop
-
-```bash
+```sh
+npm ci
 npm run dev
 ```
 
-## Deploy
+Open [localhost:3000](http://localhost:3000). The idea board uses a local file in development unless Convex is configured. See the [board guide](docs/board.md) for storage, owner access, and production configuration.
 
-Requires `vercel login` first (interactive — must be run by hand).
-
-```bash
-npx vercel@latest --prod
+```sh
+yarn lint
+yarn test
+yarn build
 ```
 
-Then add the domain:
+The tests cover the local board store, including concurrent writes, reactions, and compatibility with older snapshots. The production build also checks TypeScript.
 
-```bash
-npx vercel@latest domains add kevinpei.dev
-```
+## Editing the site
 
-Vercel prints the nameservers or A/CNAME records to set at the registrar.
+- Portfolio copy, links, work history, projects, education, and skills live in [`src/content.ts`](src/content.ts).
+- The shared desktop and note-window behavior live in [`src/app/stickies`](src/app/stickies). Match native Stickies and Finder using the [macOS review checklist](project.md#macos-review). The notes switch to columns or a stack on smaller screens.
+- Use the edge shortcuts or menu to switch desktops. The portfolio desktop stays fixed, and the Idea Board stickies area scrolls when it overflows. Open a portfolio sticky’s full text with its title-bar read button. The menu, WIP banner, and desktop switch stay in view, and the portfolio footer stays at the bottom.
+- The portfolio desktop has three draggable folders. **Wallpapers** lets visitors pick, shuffle, or reset the background. **Files** links to Kevin's résumé PDF. **Archive** is empty. See the [folder and wallpaper guide](docs/wallpapers.md).
+- The idea board UI lives in [`src/app/board`](src/app/board). Server-side board logic lives in [`src/lib/board-store.ts`](src/lib/board-store.ts) and [`convex`](convex).
 
-## What's wired up
+Portfolio note links include `/#about`, `/#work`, `/#projects`, `/#contact`, `/#education`, and `/#toolkit`. Board deep links use `/board?idea=<id>`. Wallpaper, folder positions, and sticky-window layout are saved in the current browser. Arrange All restores the default layout for the relevant desktop.
 
-- `src/app/opengraph-image.tsx` — 1200×630 link-preview card, generated at build
-- `src/app/icon.svg` — favicon (K monogram)
-- `src/app/robots.ts`, `src/app/sitemap.ts` — crawler basics
-- JSON-LD `Person` schema in `src/app/page.tsx` — helps search engines tie the name
-  to this site rather than to the other Kevin Pei who holds `kevinpei.com`
-- Six Mac Stickies-style portfolio notes: About, Work, Projects, Contact, Education, and Toolkit
-- Draggable and resizable notes with native-style title bars, close/collapse controls, and six paper colors
-- Stickies, File, Color, Window, and Help menus; Window reopens closed notes and Arrange All restores the layout
-- Direct `#work`, `#projects`, `#contact`, `#education`, and `#toolkit` links; `/#stickies` forwards to the live idea board
-- Keyboard-operable menus, skip link, visible focus states, and scrollable note content
-- Responsive layout: desktop notes float freely; tablet notes form two columns; mobile notes stack in reading order
-- Homepage and board shell in `src/app/stickies/`; content remains in `src/content.ts`
-- Layout and color adjustments are temporary browser-session state; the portfolio’s source content is not editable by visitors
+See [project.md](project.md) for the architecture and verification checklist, [context.md](context.md) for the owner's decisions and handoff, and [AGENTS.md](AGENTS.md) for repository conventions.
 
-## Known refinements for later
+## Deployment
 
-- The OG image falls back to a system sans; loading Instrument Serif into
-  `ImageResponse` would match the site's display face.
-- `site.status` ("Open to Summer 2027 internships") is an assumption — reword or
-  delete it in `src/content.ts`.
-- Compco has no `href`. Add a repo link to make its card clickable, like PersonaLab
-  and AgentOS.
-
-## Idea board
-
-`/#stickies` and `/board` open the idea board with project ideas, comments, and owner editing, styled to match the Stickies portfolio.
-See [the board setup guide](docs/board.md) for local use and shared database configuration.
+The site domain is `kevinpei.dev`. Update `site.url` in `src/content.ts` if it changes. Next.js uses it for canonical URLs, robots, the sitemap, and the share image. Configure the [production board environment](docs/board.md#production) before deploying the site to Vercel.
