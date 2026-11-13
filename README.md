@@ -1,6 +1,6 @@
 # kevinpei.dev
 
-A personal portfolio arranged as a macOS Stickies desktop. The portfolio notes live at `/`. The live idea board opens from the desktop edge, the File or Window menu, or directly at `/board`.
+Kevin Pei's personal portfolio and public Ideas Board, arranged as two macOS Stickies desktops. Start at `/` for the portfolio notes. Open the board from the right edge, the File or Window menu, or directly at `/board`.
 
 ## Local development
 
@@ -22,11 +22,13 @@ The tests cover the local board store, including concurrent writes, reactions, a
 ## Editing the site
 
 - Portfolio copy, links, work history, projects, education, and skills live in [`src/content.ts`](src/content.ts).
-- The shared desktop and note-window behavior live in [`src/app/stickies`](src/app/stickies). Native macOS is the 1:1 design reference for icons, UI, and behavior. The notes switch to columns or a stack on smaller screens.
-- The portfolio desktop has three draggable folders. **Wallpapers** lets visitors pick, shuffle, or reset the background. **Files** contains Kevin's resume PDF, and **Archive** is empty. See the [folder and wallpaper guide](docs/wallpapers.md).
+- The shared desktop and note-window behavior live in [`src/app/stickies`](src/app/stickies). Match native Stickies and Finder using the [macOS review checklist](project.md#macos-review). The notes switch to columns or a stack on smaller screens.
+- The portfolio desktop has three draggable folders. **Wallpapers** lets visitors pick, shuffle, or reset the background. **Files** links to Kevin's résumé PDF. **Archive** is empty. See the [folder and wallpaper guide](docs/wallpapers.md).
 - The idea board UI lives in [`src/app/board`](src/app/board). Server-side board logic lives in [`src/lib/board-store.ts`](src/lib/board-store.ts) and [`convex`](convex).
 
-Portfolio note links include `/#about`, `/#work`, `/#projects`, `/#contact`, `/#education`, and `/#toolkit`. Board share links use `/board?idea=<id>`. Wallpaper, folder positions, and sticky-window positions, sizes, colors, stacking order, and open or collapsed state are saved in the current browser. Arrange All restores the sticky-window layout for that desktop.
+Portfolio note links include `/#about`, `/#work`, `/#projects`, `/#contact`, `/#education`, and `/#toolkit`. Board deep links use `/board?idea=<id>`. Wallpaper, folder positions, and sticky-window layout are saved in the current browser. Arrange All restores the default layout for the relevant desktop.
+
+See [project.md](project.md) for the architecture and verification checklist, [context.md](context.md) for the owner's decisions and handoff, and [AGENTS.md](AGENTS.md) for repository conventions.
 
 ## Deployment
 

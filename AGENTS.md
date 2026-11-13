@@ -20,6 +20,11 @@ House rules for agents in this repo. These override default behavior.
 
 - Keep relevant Markdown files current as work progresses, including `README.md`,
   `project.md`, `context.md`, and `AGENTS.md` when applicable.
+- Use [README.md](README.md) for setup and entry points, [project.md](project.md)
+  for current architecture and acceptance checks, and [context.md](context.md)
+  for owner decisions, superseded directions, and handoff notes. Update
+  [the board guide](docs/board.md) and [the folder guide](docs/wallpapers.md)
+  when their behavior or setup changes.
 - Update documentation in the same task when behavior, setup, conventions,
   decisions, verified status, or remaining work changes. Do not wait for a separate
   request to update it.
@@ -30,6 +35,16 @@ House rules for agents in this repo. These override default behavior.
 ## macOS UI reference
 
 - Use native macOS as the 1:1 reference for the portfolio's desktop icons, interface, and interaction behavior. Match the corresponding macOS element's appearance and behavior, including placement, layering, focus, and keyboard and pointer interactions.
+- Use the owner's screenshots as the visual reference for the specific surface.
+  Compare the relevant native Stickies, Finder, or Spaces interaction before
+  changing it. Check spacing, selection, focus, window chrome, pointer and
+  keyboard behavior, and state across desktop switches and refreshes.
+- Follow Apple's platform guidance on menu commands, movable and resizable
+  windows, keyboard access, and touch target sizing. Check wide and narrow browser
+  layouts and record any browser-specific behavior in the relevant guide.
+  [Apple's Designing for macOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-macos)
+- Preserve the owner's wording on idea stickies. A title-only submission stays
+  title-only. Draft descriptions only when the owner asks and retain supplied links.
 
 ---
 

@@ -2,9 +2,13 @@
 
 Open the board at `/board`, `/#stickies`, or through the portfolio's desktop navigation. On a wide screen, drag a sticky by its title bar and resize it from the bottom-right corner. Double-click the title bar to collapse or expand it. The browser remembers the layout across refreshes. **Arrange all notes** reopens notes and restores their default layout.
 
-In each sticky’s title bar, the heart toggles a reaction for this browser and the speech bubble opens the public discussion. Posted comments appear above the composer. Leave the name blank to post as **Anonymous**. **Owner access** unlocks creating, editing, and deleting stickies and moderating comments for the current visit.
+In each sticky’s title bar, the heart toggles a reaction for this browser and the speech bubble opens the public discussion. Both controls remain available on collapsed notes. Posted comments appear above the composer. Leave the name blank to post as **Anonymous**. **Owner access** unlocks creating, editing, and deleting stickies and moderating comments until sign-out or page reload.
 
-Click outside an open board dialog or press Escape to dismiss it.
+Click outside an open board dialog or press Escape to dismiss it. `/board?idea=<id>` reopens a locally closed sticky and brings it into view.
+
+## Idea copy
+
+Use the owner's title, description, and links. Leave the description blank when the owner supplies only a title. Titles and descriptions support simple Markdown links with `https://` or `http://` URLs. The starter copy lives in [`src/lib/board.ts`](../src/lib/board.ts). Updates to starter copy can appear on untouched seed notes while preserving owner edits, deletions, and reactions. See [Ideas Board decisions](../context.md#ideas-board-decisions) for the copy and interaction history.
 
 ## Local development
 
@@ -29,6 +33,8 @@ After deployment, open the board in two browser sessions and check that a reacti
 
 ## Data and verification
 
-The board subscribes to a public snapshot while open. Writes pass through the Next.js API and an authenticated Convex HTTP action. Comment cooldowns are enforced in the Convex transaction. The API also checks input lengths and a hidden anti-spam field. Convex seeds the board on the first write, and an initialized empty board stays empty. Snapshots include up to 1,000 ideas and the latest 1,000 comments.
+With Convex configured, the board subscribes to a public snapshot while open. Writes pass through the same-origin Next.js API and a Convex HTTP action authenticated by a shared secret. Comment cooldowns are enforced in the Convex transaction. The API also checks input lengths and a hidden anti-spam field. Convex seeds the board on the first write, and an initialized empty board stays empty. Snapshots include up to 1,000 ideas and the latest 1,000 comments.
 
-`yarn test` checks the local store without a Convex deployment. `yarn build` checks Next.js and TypeScript. Run `npx convex dev --once` against the intended development deployment to check and sync the Convex functions.
+`GET /api/board` reports `connected` for Convex, `local` for the development file, or `preview` for the read-only production seed. To verify live reactions, compare the idea's `score` in the snapshots. The title-bar heart reflects the current browser's reaction. Comments are visible in the open discussion sheet.
+
+`yarn test` checks the local store without a Convex deployment, including concurrent writes, anonymous comments, reaction retries, and legacy snapshots. `yarn build` checks Next.js and TypeScript. Run `npx convex dev --once` against the intended development deployment to check and sync the Convex functions.
