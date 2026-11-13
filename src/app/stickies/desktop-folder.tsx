@@ -1,21 +1,18 @@
 import { useId, useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import Image from "next/image";
 import { useDialogBackdrop } from "../use-dialog-backdrop";
-import { FinderToolbar } from "./files-window";
 import { useDesktopPreference } from "./use-desktop-preference";
-import finder from "./files-window.module.css";
 import styles from "./wallpapers.module.css";
 
 const directions: Record<string, [number, number]> = {
   ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1],
 };
 
-export function DesktopFolder({ name, slot, onOpen, children, finderWindow = false }: {
+export function DesktopFolder({ name, slot, onOpen, children }: {
   name: string;
   slot: number;
   onOpen: () => void;
   children?: ReactNode;
-  finderWindow?: boolean;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const backdrop = useDialogBackdrop(() => dialog.current?.close());
@@ -88,11 +85,11 @@ export function DesktopFolder({ name, slot, onOpen, children, finderWindow = fal
       <Image src="/desktop-folder.png" width={64} height={64} alt="" draggable={false} unoptimized />
       <span>{name}</span>
     </button>
-    <dialog ref={dialog} {...backdrop} className={finderWindow ? `${styles.dialog} ${finder.window}` : styles.dialog} aria-labelledby={titleId}>
-      {finderWindow ? <FinderToolbar name={name} titleId={titleId} /> : <header className={styles.titlebar}>
+    <dialog ref={dialog} {...backdrop} className={styles.dialog} aria-labelledby={titleId}>
+      <header className={styles.titlebar}>
         <form method="dialog"><button className={styles.close} aria-label={`Close ${name}`}><span aria-hidden="true">×</span></button></form>
         <h2 id={titleId}>{name}</h2>
-      </header>}
+      </header>
       {children ?? <p className={styles.emptyFolder}>0 items</p>}
     </dialog>
   </>;
