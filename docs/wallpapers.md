@@ -6,7 +6,9 @@ The portfolio uses a Mac Stickies-style desktop. **Wallpapers** starts at the to
 
 ## Collection
 
-**Wallpapers**, **Files**, and **Archive** share the supplied PNG folder sprite and start 100 px apart vertically with 64 px icons. They move with the portfolio desktop when switching to the idea board. Drag a folder to move it, or focus it and use the arrow keys. The browser remembers each position across refreshes. **Files** contains Kevin's resume PDF, which opens in a new tab. **Archive** is empty.
+**Wallpapers**, **Files**, and **Archive** share the supplied PNG folder sprite and start 100 px apart vertically with 64 px icons. They move with the portfolio desktop when switching to the idea board. Drag a folder to move it, or focus it and use the arrow keys. The browser remembers each position across refreshes. **Archive** is empty.
+
+**Files** shows the resume in a dark Finder-style list with Date Modified, Date Created, Size, and Kind columns. Click the row to select it. Double-click, tap the filename on a touch device, or press Enter, Command-O, or Command-Down Arrow with the filename focused to open the PDF in a new tab.
 
 The site serves optimized WebP copies from `public/wallpapers`. The collection includes all 12 Banshees of Inisherin images and Miyazaki images 1, 2, 3, and 5. The Miyazaki numbers come from sorting the original image filenames. Entry 4 is `wp4409084.jpg` and entry 6 is `wp9853204.webp`. The original files were kept intact.
 

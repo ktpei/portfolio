@@ -1,0 +1,170 @@
+.window:global(dialog) {
+  width: min(800px, calc(100% - 24px));
+  border-color: #625d58;
+  background: #2e2a27;
+  color: #eeecea;
+  color-scheme: dark;
+}
+
+.toolbar {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: none;
+  min-width: 0;
+  padding: 9px 10px 6px;
+  background: #36322e;
+  user-select: none;
+}
+
+.toolbar h2 {
+  flex: 1;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.trafficLights {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+}
+
+.trafficLights button, .trafficLights span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #625d58;
+}
+
+.trafficLights button {
+  display: grid;
+  place-items: center;
+  background: #ff5f57;
+  color: transparent;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.trafficLights button:is(:hover, :focus-visible) { color: #581511; }
+.window .trafficLights button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.history, .tools {
+  display: flex;
+  gap: 12px;
+  color: #bbb7b4;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.history, .tools > span {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.historyPill, .toolIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-width: 37px;
+  border: 1px solid #55504c;
+  border-top-color: #292522;
+  border-radius: 20px;
+  background: #3b3733;
+  color: #f4f3f2;
+}
+
+.historyPill { width: 74px; color: #8d8985; }
+.historyPill svg { box-sizing: content-box; padding: 0 8px; }
+.historyPill svg + svg { border-left: 1px solid #635e59; }
+
+.list {
+  min-height: min(170px, 45dvh);
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-size: 13px;
+  user-select: none;
+}
+
+.list table {
+  width: 100%;
+  min-width: 775px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.list col:nth-child(1) { width: 27.5%; }
+.list col:nth-child(2), .list col:nth-child(3) { width: 23.2%; }
+.list col:nth-child(4) { width: 12.5%; }
+
+.list thead {
+  background: #36322e;
+  color: #bbb7b4;
+  border-bottom: 1px solid #57524e;
+}
+
+.list thead th {
+  position: relative;
+  height: 27px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.list thead th + th::before {
+  position: absolute;
+  inset: 5px auto 5px 0;
+  width: 1px;
+  background: #5a5653;
+  content: "";
+}
+
+.list thead th:first-child { padding-left: 53px; color: #fff; font-weight: 700; }
+.nameHeader { display: flex; align-items: center; justify-content: space-between; }
+.nameHeader svg { width: 13px; height: 13px; }
+
+.group th {
+  height: 33px;
+  padding: 10px 6px 4px 45px;
+  color: #bbb7b4;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.file { color: #c8c4c1; }
+.file[data-selected="true"] { background: #0058d1; color: #e1ebff; }
+.file td { height: 20px; padding: 0 7px; white-space: nowrap; }
+.file td:first-child { padding: 0; }
+.file td:nth-child(4) { text-align: right; }
+
+.file a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  padding: 0 7px 0 26px;
+  color: #f1efed;
+}
+
+.file a:focus-visible { outline: 1px solid #fff; outline-offset: -2px; }
+.file a svg { flex: none; height: 14px; width: 11px; }
+.file a span { overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 560px) {
+  .toolbar { flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+  .toolbar h2 { margin-top: 0; }
+  .tools { width: 100%; padding-bottom: 4px; gap: 6px; justify-content: space-between; }
+  .list table { min-width: 730px; }
+  .list col:nth-child(1) { width: 215px; }
+}
+
+@media (pointer: coarse) {
+  .trafficLights button { width: 28px; height: 28px; }
+  .file a { min-height: 44px; }
+}

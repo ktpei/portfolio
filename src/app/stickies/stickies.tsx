@@ -7,9 +7,9 @@ import dynamic from "next/dynamic";
 import { education, highSchool, intro, links, projects, site, skills, work } from "@/content";
 import { StickyWindow, type StickyColor, type StickyPlacement } from "./sticky-window";
 import { DesktopFolder } from "./desktop-folder";
+import { FilesList } from "./files-window";
 import { WallpaperPicker } from "./wallpapers";
 import { clearDesktopPreferences, useDesktopPreference } from "./use-desktop-preference";
-import folderStyles from "./wallpapers.module.css";
 import styles from "./stickies.module.css";
 
 const BulletinBoard = dynamic(() => import("../board/bulletin-board").then((module) => module.BulletinBoard));
@@ -262,12 +262,8 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
         <DesktopFolder name="Wallpapers" slot={0} onOpen={() => setMenu(null)}>
           <WallpaperPicker current={wallpaper} onSelect={setWallpaper} />
         </DesktopFolder>
-        <DesktopFolder name="Files" slot={1} onOpen={() => setMenu(null)}>
-          <div className={folderStyles.fileList}>
-            <a href="/files/Kevin-Pei-Resume.pdf" target="_blank" rel="noopener">
-              Kevin Pei Resume.pdf
-            </a>
-          </div>
+        <DesktopFolder name="Files" slot={1} onOpen={() => setMenu(null)} finderWindow>
+          <FilesList />
         </DesktopFolder>
         <DesktopFolder name="Archive" slot={2} onOpen={() => setMenu(null)} />
         <Link href="/#stickies" className={styles.edgeLink} onClick={(event) => switchDesktop(event, true)}>
