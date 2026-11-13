@@ -6,6 +6,7 @@ import {
   deleteBoardNote,
   getBoardSnapshot,
   saveBoardNote,
+  setBoardVote,
 } from "@/lib/board-store";
 
 export const runtime = "nodejs";
@@ -33,7 +34,11 @@ function hasOwnerToken(request: Request) {
 
 function sameOrigin(request: Request) {
   const origin = request.headers.get("origin");
-  return origin === new URL(request.url).origin;
+  if (!origin) return false;
+  const url = new URL(request.url);
+  const host = request.headers.get("host");
+  // Next may build the route URL with its internal hostname.
+  return origin === (host ? `${url.protocol}//${host}` : url.origin);
 }
 
 function clientKey(request: Request) {
@@ -84,9 +89,13 @@ export async function POST(request: Request) {
   try {
     if (!sameOrigin(request)) return error("Cross-origin writes are not allowed.", 403);
     const input = await body(request);
+    if (input.action === "vote") {
+      if (input.value !== 0 && input.value !== 1) return error("Invalid reaction.", 400);
+      return json(await setBoardVote(input.noteId, input.voter, input.value));
+    }
     if (input.action === "comment") {
       if (typeof input.website === "string" && input.website.trim()) return error("Spam detected.", 400);
-      if (rateLimited(request)) return error("Please wait before posting another comment.", 429);
+      if (!process.env.NEXT_PUBLIC_CONVEX_URL && rateLimited(request)) return error("Please wait before posting another comment.", 429);
       return json(await createBoardComment({ noteId: input.noteId as string, name: input.name as string, body: input.body as string }, clientKey(request)));
     }
     if (!hasOwnerToken(request)) return error("Owner authorization is required.", 401);

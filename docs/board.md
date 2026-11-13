@@ -1,86 +1,32 @@
-# The idea board
+# Idea board
 
-Open the **Idea board** from the Stickies portfolio’s File or Window menu, or at `/#stickies` or `/board`. The initial 12 stickies transcribe
-only project ideas from the supplied screenshot. They are ideas, not assertions that
-projects are underway. Crossed-out ideas start on the back burner. Personal/account
-notes and the source screenshot are not included in the site.
+Open the board at `/board`, `/#stickies`, or through the portfolio's desktop navigation. On a wide screen, drag a sticky by its title bar and resize it from the bottom-right corner. Double-click the title bar to collapse or expand it. **Arrange all notes** reopens notes and restores their positions.
 
-## Local use
+In each sticky’s title bar, the heart toggles a reaction for this browser and the speech bubble opens the public discussion. **Copy idea link** in the discussion copies a URL that focuses the idea when opened. **Owner access** unlocks creating, editing, and deleting stickies and moderating comments for the current visit.
 
-1. Run `node scripts/board-owner-key.mjs` once. It creates a random `BOARD_ADMIN_TOKEN`
-   in ignored `.env.local`, preserving any existing owner key and environment settings.
-2. Run `npm run dev` and visit `http://localhost:3000/board`.
-3. Choose **Owner access** above the stickies. Paste the `BOARD_ADMIN_TOKEN` value from
-   `.env.local` to add/edit/remove notes and remove comments. The browser keeps the key
-   only in memory; refresh or **Leave owner mode** clears it.
+## Local development
 
-Development changes persist in ignored `.data/board.json`. Other browsers using this
-same development server see the same board. Back up that file if you want to retain
-local experiments. It is not automatically migrated to the production database.
+Run `npm ci` and `npm run dev`, then open `/board`. Without a Convex URL, the app reads and writes `.data/board.json` in development and polls the local API while the board is open. Keep the file if you want to preserve local data. Production without a Convex URL serves a read-only seed preview.
 
-Visitors can read notes, search/filter, and post named comments without signing in.
-Names are self-reported, not verified identities. Comments are public plain text.
-The API limits comments to 1,000 characters, notes to 2,000, and titles to 120.
+To enable owner access locally, run `node scripts/board-owner-key.mjs` and restart the app. The script stores `BOARD_ADMIN_TOKEN` in the ignored `.env.local` file.
 
-## Connect the public site
+To work against a Convex development deployment, run `npx convex dev`. The CLI writes the public deployment URL to `.env.local`. Set `BOARD_CONVEX_SITE_URL` in `.env.local` to that deployment's HTTP actions URL. Generate a secret with `openssl rand -hex 32` and set `BOARD_CONVEX_WRITE_SECRET` in both `.env.local` and the Convex deployment environment. Use a different secret for each deployment.
 
-This adds dynamic server routes to the formerly static portfolio. Vercel's standard
-Next.js hosting supports them; static-only export hosting does not.
+## Production
 
-1. Create/use a Supabase project and run `docs/board-database.sql` in its SQL editor.
-2. Configure these **server-only** environment variables in the hosting environment:
+Deploy the Convex functions with `npx convex deploy`. Configure these variables for the Next.js deployment before building.
 
-   ```dotenv
-   BOARD_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-   BOARD_SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY
-   BOARD_ADMIN_TOKEN=YOUR_LONG_RANDOM_OWNER_KEY
-   ```
+| Variable | Value |
+| --- | --- |
+| `NEXT_PUBLIC_CONVEX_URL` | Convex deployment URL for live reads |
+| `BOARD_CONVEX_SITE_URL` | HTTP actions URL for the same deployment |
+| `BOARD_CONVEX_WRITE_SECRET` | Server-only secret shared with the Convex deployment |
+| `BOARD_ADMIN_TOKEN` | Server-only owner key |
 
-   Do not prefix them with `NEXT_PUBLIC_`. Generate an owner key with
-   `openssl rand -hex 32`; use it only in the owner dialog and server environment.
-3. Redeploy using the portfolio's existing deployment process.
-4. Open `/board` in two browsers. Add a note or comment in one; check that it appears
-   in the other without reloading. Test owner editing and comment removal.
+After deployment, open the board in two browser sessions and check that a reaction or comment appears in the other session without reloading. Verify owner access and confirm the site is using the intended Convex deployment.
 
-The first database read initializes the seed board once. Removing an idea does not
-restore it on the next update. Tables use row-level security with no public policies;
-only server routes hold the service-role credential.
+## Data and verification
 
-When production has no database configuration, the board explicitly shows a **Board
-preview** and disables comments; it never silently stores visitor comments on an
-instance's temporary disk. Database failures retain the last loaded client snapshot,
-show a reconnecting message, and retry.
+The board subscribes to a public snapshot while open. Writes pass through the Next.js API and an authenticated Convex HTTP action. Comment cooldowns are enforced in the Convex transaction. The API also checks input lengths and a hidden anti-spam field. Convex seeds the board on the first write, and an initialized empty board stays empty. Snapshots include up to 1,000 ideas and the latest 1,000 comments.
 
-## Updates and scope
-
-The browser polls the shared API every three seconds while visible and refreshes when
-its tab becomes visible. This is near-real-time polling, not a WebSocket subscription.
-It works across browsers and server instances backed by the same Supabase database.
-The board is edited on the website; automatic sync from the macOS Stickies application
-is not implemented. No private Mac data is read.
-
-Anonymous comments have a honeypot and a 15-second per-client cooldown. Supabase mode
-enforces the cooldown in the database across server instances; local mode uses an
-in-process limiter. Owner moderation is available in each sticky's conversation.
-For a larger audience, add host-level bot protection and a reporting/moderation flow.
-
-## Verification
-
-```sh
-npm run lint
-npx tsc --noEmit
-npm run build
-```
-
-The store integration test can be compiled and run without adding dependencies:
-
-```sh
-npx tsc tests/board-store.test.ts --outDir /tmp/portfolio-board-tests --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck
-node /tmp/portfolio-board-tests/tests/board-store.test.js
-```
-
-Shared snapshots show the latest 1,000 comments, oldest to newest, and up to the
-database API’s default note limit (normally 1,000). Older comments remain in the
-database. Add pagination if the board grows beyond this personal-board scale.
-
-The database functions follow [Supabase’s function security guidance](https://supabase.com/docs/guides/database/functions).
+`yarn test` checks the local store without a Convex deployment. `yarn build` checks Next.js and TypeScript. Run `npx convex dev --once` against the intended development deployment to check and sync the Convex functions.
