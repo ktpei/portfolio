@@ -91,6 +91,7 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
   const [clock, setClock] = useState("New York");
   const [wallpaper, setWallpaper] = useDesktopPreference<string | null>("wallpaper", null);
   const menuRef = useRef<HTMLElement>(null);
+  const spacesRef = useRef<HTMLElement>(null);
   const notesRef = useRef<HTMLElement>(null);
   const boardRef = useRef<HTMLElement>(null);
 
@@ -105,7 +106,7 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
     if (isBoard !== nextIsBoard) {
       if (nextIsBoard) setBoardVisited(true);
       setIsBoard(nextIsBoard);
-      window.scrollTo({ top: 0, behavior: "instant" });
+      spacesRef.current?.scrollTo({ top: 0, behavior: "instant" });
     }
     if (noteId) show(noteId);
     else requestAnimationFrame(() => (nextIsBoard ? boardRef : notesRef).current?.focus({ preventScroll: true }));
@@ -154,10 +155,10 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
       const changed = nextDesktop?.inert;
       setIsBoard(nextIsBoard);
       setMenu(null);
+      if (changed) spacesRef.current?.scrollTo({ top: 0, behavior: "instant" });
       if (nextIsBoard) {
         setBoardVisited(true);
         if (changed) {
-          window.scrollTo({ top: 0, behavior: "instant" });
           requestAnimationFrame(() => nextDesktop.focus({ preventScroll: true }));
         }
         return;
@@ -257,28 +258,25 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
       <div className={styles.menuRight}><span className={styles.owner}>{site.name}</span><time aria-label={`New York time: ${clock}`}>{clock}</time></div>
     </header>
     <p className={styles.wipBanner}><strong>WIP</strong><span>This portfolio is a work in progress.</span></p>
-    <main className={styles.spaces}>
+    <Link href={isBoard ? "/" : "/#stickies"} className={`${styles.edgeLink}${isBoard ? ` ${styles.backLink}` : ""}`} onClick={(event) => switchDesktop(event, !isBoard)}>
+      {isBoard ? <><DesktopArrow back /> Portfolio</> : <>Idea Board <DesktopArrow /></>}
+    </Link>
+    <main ref={spacesRef} className={styles.spaces}>
       <section ref={notesRef} id="notes" tabIndex={-1} inert={isBoard} className={`${styles.space} ${styles.portfolioSpace}`} aria-label="Kevin Pei’s notes">
         <DesktopFolder name="Wallpapers" slot={0} onOpen={() => setMenu(null)}>
           <WallpaperPicker current={wallpaper} onSelect={setWallpaper} />
         </DesktopFolder>
         <DesktopFolder name="Files" slot={1} onOpen={() => setMenu(null)} />
         <DesktopFolder name="Archive" slot={2} onOpen={() => setMenu(null)} />
-        <Link href="/#stickies" className={styles.edgeLink} onClick={(event) => switchDesktop(event, true)}>
-          <span>Idea Board <DesktopArrow /></span>
-        </Link>
         <div className={styles.workspace}>
           {notes.filter((note) => !closed.includes(note.id)).map((note) => <StickyWindow key={`${note.id}-${arrangement}`} note={note} active={active === note.id} color={palette[note.id]} order={stack.indexOf(note.id) + 1} collapsed={collapsed.includes(note.id)} onActivate={() => activate(note.id)} onClose={() => closeNote(note.id)} onCollapse={() => toggleCollapsed(note.id)}><NoteContent id={note.id} /></StickyWindow>)}
           {closed.length === notes.length && <div className={styles.empty}><p>All tucked away.</p><button onClick={reset}>Reopen my notes</button></div>}
         </div>
-        <footer className={styles.footer}><span>Kevin Pei’s desktop</span><button onClick={reset}>Arrange all notes</button></footer>
       </section>
       <section ref={boardRef} id="board-desktop" tabIndex={-1} inert={!isBoard} className={`${styles.space} ${styles.boardSpace}`} aria-label="Idea Board desktop">
-        <Link href="/" className={styles.edgeLink} onClick={(event) => switchDesktop(event, false)}>
-          <span><DesktopArrow back /> Portfolio</span>
-        </Link>
         <div className={styles.boardSurface}>{boardVisited && <BulletinBoard active={isBoard} />}</div>
       </section>
     </main>
+    {!isBoard && <footer className={styles.footer}><span>Kevin Pei’s desktop</span><button onClick={reset}>Arrange all notes</button></footer>}
   </div>;
 }

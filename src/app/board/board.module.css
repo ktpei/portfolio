@@ -1,9 +1,14 @@
 .toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 4px 20px;
   padding-inline: 3%;
+  background: #dce4eae8;
+  backdrop-filter: blur(12px);
 }
 
 .boardHeading {
@@ -18,10 +23,12 @@
 
 .boardHeading p { font-size: 14px; color: #35434e; }
 
-:global([data-wallpaper-selected]) :is(.toolbar, .notice) {
+:global([data-wallpaper-selected]) .notice {
   background: #f5f5f7;
   border-radius: 8px;
 }
+
+:global([data-wallpaper-selected]) .toolbar { background: #f5f5f7e8; border-radius: 8px; }
 
 .board button { cursor: pointer; }
 .board button:disabled { cursor: default; opacity: .55; }
@@ -34,6 +41,7 @@
 }
 
 .board .workspace { isolation: isolate; }
+.workspace :is(article, [tabindex], button, a) { scroll-margin-block-start: 4rem; }
 
 @media (min-width: 1000px) {
   .board .workspace { min-height: calc(222px * var(--rows) + 52px); }
@@ -124,5 +132,6 @@
 }
 
 @media (max-width: 600px) {
+  .workspace :is(article, [tabindex], button, a) { scroll-margin-block-start: 7rem; }
   .ideaBody .edit { min-height: 44px; }
 }
