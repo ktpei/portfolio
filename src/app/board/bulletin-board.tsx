@@ -169,7 +169,10 @@ function BoardView({ active, live }: BoardProps & { live?: LiveBoard }) {
 
   return <section className={styles.board} aria-label="Idea board">
     <div className={styles.toolbar}>
-      <h1>Idea board</h1>
+      <div className={styles.boardHeading}>
+        <h1>Idea board</h1>
+        <p>Feel free to leave comments.</p>
+      </div>
       {ownerKey && <button type="button" aria-haspopup="dialog" disabled={!writable} onClick={(event) => openDialog({ kind: "new" }, event.currentTarget)}>New sticky</button>}
       <button type="button" ref={arrangeButton} onClick={arrangeAll}>Arrange all notes</button>
       {data.mode !== "preview" && <button type="button" ref={ownerButton} aria-haspopup={ownerKey ? undefined : "dialog"} onClick={(event) => ownerKey ? setOwnerKey("") : openDialog({ kind: "unlock" }, event.currentTarget)}>{ownerKey ? "Sign out" : "Owner access"}</button>}
