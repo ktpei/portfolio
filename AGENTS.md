@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## macOS UI reference
+
+- Use native macOS as the 1:1 reference for the portfolio's desktop icons, interface, and interaction behavior. Match the corresponding macOS element's appearance and behavior, including placement, layering, focus, and keyboard and pointer interactions.
