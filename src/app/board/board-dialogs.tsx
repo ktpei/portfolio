@@ -2,6 +2,7 @@
 
 import { useId, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { noteColors, noteStatuses, statusLabels, type BoardComment, type BoardNote } from "@/lib/board";
+import { useDialogBackdrop } from "../use-dialog-backdrop";
 import styles from "./board.module.css";
 
 export type Mutate = (body: Record<string, unknown>) => Promise<void>;
@@ -9,14 +10,15 @@ export type Mutate = (body: Record<string, unknown>) => Promise<void>;
 export function Dialog({ title, onClose, children, sheet = false }: { title: string; onClose: () => void; children: ReactNode; sheet?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+  const backdrop = useDialogBackdrop(onClose);
   useLayoutEffect(() => {
     const dialog = ref.current;
     dialog?.showModal();
     return () => dialog?.close();
   }, []);
 
-  return <dialog ref={ref} className={sheet ? `${styles.dialog} ${styles.commentSheet}` : styles.dialog} aria-labelledby={titleId} onCancel={(event) => { event.preventDefault(); onClose(); }}>
-    <header className={styles.dialogHeader}>
+  return <dialog ref={ref} {...backdrop} className={sheet ? `${styles.dialog} ${styles.commentSheet}` : styles.dialog} aria-labelledby={titleId} onCancel={(event) => { event.preventDefault(); onClose(); }}>
+    <header className={sheet ? styles.srOnly : styles.dialogHeader}>
       <h2 id={titleId}>{title}</h2>
       {!sheet && <button type="button" onClick={() => onClose()} aria-label="Close dialog">×</button>}
     </header>
@@ -104,7 +106,6 @@ export function Comments({ noteId, comments, canModerate, writable, mutate, onCl
   noteId: string; comments: BoardComment[]; canModerate: boolean; writable: boolean; mutate: Mutate; onClose: () => void;
 }) {
   const [body, setBody] = useState("");
-  const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -139,7 +140,7 @@ export function Comments({ noteId, comments, canModerate, writable, mutate, onCl
       {canModerate && <button type="button" aria-label={`Remove comment by ${comment.name}`} disabled={!writable || busy} onClick={() => void write({ action: "delete-comment", id: comment.id }, () => setNotice("Comment removed."))}>Remove</button>}
     </li>)}</ol>}
     <form className={styles.form} onSubmit={post}>
-      <label>Name<input name="name" value={name} onChange={(event) => setName(event.target.value)} autoComplete="nickname" maxLength={60} required /></label>
+      <label>Name (optional)<input name="name" autoComplete="nickname" maxLength={60} /></label>
       <label>Public comment<textarea name="comment" value={body} onChange={(event) => setBody(event.target.value)} rows={3} maxLength={1000} required readOnly={busy} /></label>
       <label hidden>Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
       {!writable && <p>Posting is unavailable.</p>}
@@ -147,7 +148,7 @@ export function Comments({ noteId, comments, canModerate, writable, mutate, onCl
       <p role="status" className={styles.commentStatus}>{notice}</p>
       <div className={styles.formActions}>
         <button type="button" onClick={onClose}>Close</button>
-        <button type="submit" disabled={!writable || busy || !name.trim() || !body.trim()}>{busy ? "Posting…" : "Post"}</button>
+        <button type="submit" disabled={!writable || busy || !body.trim()}>{busy ? "Posting…" : "Post"}</button>
       </div>
     </form>
   </>;

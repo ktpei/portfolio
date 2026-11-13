@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     if (input.action === "comment") {
       if (typeof input.website === "string" && input.website.trim()) return error("Spam detected.", 400);
       if (!process.env.NEXT_PUBLIC_CONVEX_URL && rateLimited(request)) return error("Please wait before posting another comment.", 429);
-      return json(await createBoardComment({ noteId: input.noteId as string, name: input.name as string, body: input.body as string }, clientKey(request)));
+      return json(await createBoardComment({ noteId: input.noteId as string, name: input.name as string | undefined, body: input.body as string }, clientKey(request)));
     }
     if (!hasOwnerToken(request)) return error("Owner authorization is required.", 401);
     if (input.action === "save-note") return json(await saveBoardNote(noteFrom(input.note)));

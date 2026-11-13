@@ -68,6 +68,10 @@ async function run() {
   assert.equal(notePlainText(starter.title), "Buffed up visor but for guidance/onboard");
 
   assert.throws(() => validateComment({ noteId: "bad/id", name: "A", body: "B" }), BoardStoreError);
+  const anonymous = await store.createComment({ noteId: "notes-to-text", body: " No name. " });
+  assert.equal(anonymous.comments.at(-1)?.name, "Anonymous");
+  assert.equal(anonymous.comments.at(-1)?.body, "No name.");
+  assert.equal(validateComment({ noteId: "notes-to-text", name: "   ", body: "No name." }).name, "Anonymous");
   assert.throws(() => validateNote({ title: "", body: "B", color: "yellow", status: "idea" }), BoardStoreError);
   console.log("board-store tests passed");
 }

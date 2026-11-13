@@ -2,7 +2,9 @@
 
 Open the board at `/board`, `/#stickies`, or through the portfolio's desktop navigation. On a wide screen, drag a sticky by its title bar and resize it from the bottom-right corner. Double-click the title bar to collapse or expand it. **Arrange all notes** reopens notes and restores their positions.
 
-In each sticky’s title bar, the heart toggles a reaction for this browser and the speech bubble opens the public discussion in a compact sheet. **Owner access** unlocks creating, editing, and deleting stickies and moderating comments for the current visit.
+In each sticky’s title bar, the heart toggles a reaction for this browser and the speech bubble opens the public discussion. Posted comments appear above the composer. Leave the name blank to post as **Anonymous**. **Owner access** unlocks creating, editing, and deleting stickies and moderating comments for the current visit.
+
+Click outside an open board dialog or press Escape to dismiss it.
 
 ## Local development
 

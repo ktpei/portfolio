@@ -1,5 +1,6 @@
 import { useId, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import Image from "next/image";
+import { useDialogBackdrop } from "../use-dialog-backdrop";
 import styles from "./wallpapers.module.css";
 
 const directions: Record<string, [number, number]> = {
@@ -13,6 +14,7 @@ export function DesktopFolder({ name, slot, onOpen, children }: {
   children?: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const backdrop = useDialogBackdrop(() => dialog.current?.close());
   const titleId = useId();
   const [position, setPosition] = useState<{ x: number; y: number }>();
   const gesture = useRef<{ pointer: number; x: number; y: number; left: number; top: number } | null>(null);
@@ -82,7 +84,7 @@ export function DesktopFolder({ name, slot, onOpen, children }: {
       <Image src="/desktop-folder.png" width={32} height={32} alt="" draggable={false} unoptimized />
       <span>{name}</span>
     </button>
-    <dialog ref={dialog} className={styles.dialog} aria-labelledby={titleId}>
+    <dialog ref={dialog} {...backdrop} className={styles.dialog} aria-labelledby={titleId}>
       <header className={styles.titlebar}>
         <form method="dialog"><button className={styles.close} aria-label={`Close ${name}`}><span aria-hidden="true">×</span></button></form>
         <h2 id={titleId}>{name}</h2>

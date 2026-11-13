@@ -10,6 +10,8 @@ The portfolio uses a Mac Stickies-style desktop. Its **Wallpapers** folder float
 
 The site serves optimized WebP copies from `public/wallpapers`. The collection includes all 12 Banshees of Inisherin images and Miyazaki images 1, 2, 3, and 5. The Miyazaki numbers come from sorting the original image filenames. Entry 4 is `wp4409084.jpg` and entry 6 is `wp9853204.webp`. The original files were kept intact.
 
+Click outside an open desktop folder window or press Escape to close it.
+
 ## Placement history
 
 The first picker opened from the menu bar. It then moved to the left side of the desktop, where the folder's row shifted the content below it. The folder now uses absolute positioning within the portfolio desktop.

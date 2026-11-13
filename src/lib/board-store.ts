@@ -18,7 +18,7 @@ import {
 
 type BoardMode = BoardSnapshot["mode"];
 type StoredBoard = { initialized: true; notes: BoardNote[]; comments: BoardComment[]; votes?: Record<string, Record<string, Vote>> };
-export type NewComment = Pick<BoardComment, "noteId" | "name" | "body">;
+export type NewComment = Pick<BoardComment, "noteId" | "body"> & { name?: string };
 export type NoteInput = { id?: string; title: string; body: string; color: NoteColor; status: NoteStatus };
 
 export class BoardStoreError extends Error {
@@ -57,11 +57,11 @@ function cleanText(value: unknown, label: string, max: number, allowEmpty = fals
   return trimmed;
 }
 
-export function validateComment(input: NewComment): NewComment {
+export function validateComment(input: NewComment): Required<NewComment> {
   if (!isSafeId(input.noteId)) throw new BoardStoreError("Invalid note ID.");
   return {
     noteId: input.noteId,
-    name: cleanText(input.name, "Name", MAX_NAME),
+    name: cleanText(input.name === undefined ? "" : input.name, "Name", MAX_NAME, true) || "Anonymous",
     body: cleanText(input.body, "Comment", MAX_COMMENT_BODY),
   };
 }
