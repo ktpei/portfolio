@@ -23,7 +23,7 @@ The tests cover the local board store, including concurrent writes, reactions, a
 
 - Portfolio copy, links, work history, projects, education, and skills live in [`src/content.ts`](src/content.ts).
 - The shared desktop and note-window behavior live in [`src/app/stickies`](src/app/stickies). Native macOS is the 1:1 design reference for icons, UI, and behavior. The notes switch to columns or a stack on smaller screens.
-- The portfolio desktop has three draggable folders. **Wallpapers** lets visitors pick, shuffle, or reset the background. **Files** and **Archive** are empty for future use. See the [folder and wallpaper guide](docs/wallpapers.md).
+- The portfolio desktop has three draggable folders. **Wallpapers** lets visitors pick, shuffle, or reset the background. **Files** contains Kevin's resume PDF, and **Archive** is empty. See the [folder and wallpaper guide](docs/wallpapers.md).
 - The idea board UI lives in [`src/app/board`](src/app/board). Server-side board logic lives in [`src/lib/board-store.ts`](src/lib/board-store.ts) and [`convex`](convex).
 
 Portfolio note links include `/#about`, `/#work`, `/#projects`, `/#contact`, `/#education`, and `/#toolkit`. Board share links use `/board?idea=<id>`. Wallpaper, folder positions, and sticky-window positions, sizes, colors, stacking order, and open or collapsed state are saved in the current browser. Arrange All restores the sticky-window layout for that desktop.
