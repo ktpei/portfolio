@@ -1,22 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useRef, type CSSProperties, type ReactNode } from "react";
+import { useDesktopPreference } from "./use-desktop-preference";
 import styles from "./stickies.module.css";
 
 export type StickyColor = "yellow" | "blue" | "pink" | "green" | "purple" | "gray";
 export type StickyPlacement = { id: string; title: string; x: number; y: number; width: number; height: number };
 
 export function StickyWindow({ note, color, active, order, collapsed, onActivate, onClose, onCollapse, bodyClassName, titleBarActions, children }: { note: StickyPlacement; color: StickyColor; active: boolean; order: number; collapsed: boolean; onActivate: () => void; onClose: () => void; onCollapse: () => void; bodyClassName?: string; titleBarActions?: ReactNode; children: ReactNode }) {
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+  const space = note.id.startsWith("idea-") ? "board" : "portfolio";
+  const [offset, setOffset] = useDesktopPreference(`window:${space}:${note.id}:offset`, { x: 0, y: 0 });
+  const [size, setSize] = useDesktopPreference<{ width: number; height: number } | null>(`window:${space}:${note.id}:size`, null);
   const ref = useRef<HTMLElement>(null);
   const gesture = useRef<{ kind: "move" | "resize"; x: number; y: number; left: number; top: number; width: number; height: number; originX: number; originY: number; viewportWidth: number } | null>(null);
-
-  useEffect(() => {
-    function fitToViewport() { setOffset({ x: 0, y: 0 }); setSize(null); gesture.current = null; }
-    window.addEventListener("resize", fitToViewport);
-    return () => window.removeEventListener("resize", fitToViewport);
-  }, []);
 
   function start(event: React.PointerEvent<HTMLElement>, kind: "move" | "resize") {
     if (event.button !== 0 || !matchMedia("(min-width: 1000px)").matches || !ref.current) return;

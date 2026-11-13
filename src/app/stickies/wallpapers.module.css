@@ -1,9 +1,11 @@
 .folder {
+  --folder-width: 80px;
+  --folder-height: 84px;
   position: absolute;
-  top: min(var(--folder-y, 0px), calc(100% - 48px));
-  left: min(var(--folder-x, calc(clamp(4px, 2vw, 32px) + 66px * var(--slot))), calc(100% - 66px));
-  width: 66px;
-  height: 48px;
+  top: min(var(--folder-y, calc(12px + 100px * var(--slot))), calc(100% - var(--folder-height)));
+  left: min(var(--folder-x, 6px), calc(100% - var(--folder-width)));
+  width: var(--folder-width);
+  height: var(--folder-height);
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -14,6 +16,7 @@
   white-space: nowrap;
 }
 
+.folder[data-position-restored="false"] { visibility: hidden; }
 .folder span { padding: 1px 3px; border-radius: 4px; background: #f3f6f8; color: #293e4e; font-size: 11px; font-weight: 650; line-height: 1.2; }
 .folder:focus span { background: #0a63c9; color: #fff; }
 .folder:focus img { background: #1c30422e; border-radius: 5px; }

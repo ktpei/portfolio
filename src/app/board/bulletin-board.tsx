@@ -5,6 +5,7 @@ import { ConvexProvider, ConvexReactClient, useConvexConnectionState, useQueries
 import { api } from "../../../convex/_generated/api";
 import { notePlainText, parseNoteText, seedNotes, type BoardNote, type BoardSnapshot } from "@/lib/board";
 import { StickyWindow } from "../stickies/sticky-window";
+import { clearDesktopPreferences, useDesktopPreference } from "../stickies/use-desktop-preference";
 import stickyStyles from "../stickies/stickies.module.css";
 import { Comments, Dialog, NoteEditor, OwnerUnlock, type Mutate } from "./board-dialogs";
 import styles from "./board.module.css";
@@ -53,9 +54,9 @@ function LiveBulletinBoard(props: BoardProps) {
 function BoardView({ active, live }: BoardProps & { live?: LiveBoard }) {
   const [data, setData] = useState<BoardSnapshot>({ notes: seedNotes, comments: [], mode: "preview" });
   const [localConnection, setConnection] = useState<Connection>("loading");
-  const [closed, setClosed] = useState<string[]>([]);
-  const [collapsed, setCollapsed] = useState<string[]>([]);
-  const [stack, setStack] = useState<string[]>([]);
+  const [closed, setClosed, restoredClosed] = useDesktopPreference<string[]>("board:closed", []);
+  const [collapsed, setCollapsed] = useDesktopPreference<string[]>("board:collapsed", []);
+  const [stack, setStack] = useDesktopPreference<string[]>("board:stack", []);
   const [arrangement, setArrangement] = useState(0);
   const [dialog, setDialog] = useState<BoardDialog | null>(null);
   const [ownerKey, setOwnerKey] = useState("");
@@ -114,9 +115,14 @@ function BoardView({ active, live }: BoardProps & { live?: LiveBoard }) {
       linkedNote.current = null;
       return;
     }
+    if (!restoredClosed) return;
     const id = new URLSearchParams(window.location.search).get("idea");
     if (!id || linkedNote.current === id) return;
     const frame = requestAnimationFrame(() => {
+      if (closed.includes(id)) {
+        setClosed((previous) => previous.filter((item) => item !== id));
+        return;
+      }
       const note = document.getElementById(`idea-${id}`);
       if (!note) return;
       linkedNote.current = id;
@@ -124,13 +130,14 @@ function BoardView({ active, live }: BoardProps & { live?: LiveBoard }) {
       note.scrollIntoView({ block: "nearest" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [active, data.notes]);
+  }, [active, data.notes, closed, setClosed, restoredClosed]);
 
   function activate(id: string) {
     setStack((previous) => previous.at(-1) === id ? previous : [...previous.filter((item) => item !== id), id]);
   }
 
   function arrangeAll() {
+    clearDesktopPreferences("window:board:");
     setClosed([]);
     setCollapsed([]);
     setStack([]);

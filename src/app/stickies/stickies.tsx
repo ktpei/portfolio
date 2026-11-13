@@ -8,6 +8,7 @@ import { education, highSchool, intro, links, projects, site, skills, work } fro
 import { StickyWindow, type StickyColor, type StickyPlacement } from "./sticky-window";
 import { DesktopFolder } from "./desktop-folder";
 import { WallpaperPicker } from "./wallpapers";
+import { clearDesktopPreferences, useDesktopPreference } from "./use-desktop-preference";
 import styles from "./stickies.module.css";
 
 const BulletinBoard = dynamic(() => import("../board/bulletin-board").then((module) => module.BulletinBoard));
@@ -23,6 +24,8 @@ const notes: Note[] = [
   { id: "education", title: "A note on school", color: "purple", x: 37, y: 531, width: 28, height: 278 },
   { id: "toolkit", title: "My toolkit", color: "gray", x: 70, y: 577, width: 27, height: 240 },
 ];
+const defaultPalette = Object.fromEntries(notes.map(({ id, color }) => [id, color])) as Record<NoteId, StickyColor>;
+const defaultStack: NoteId[] = [...notes.slice(1).map((note) => note.id), "about"];
 
 function NoteContent({ id }: { id: NoteId }) {
   if (id === "about") return <>
@@ -77,15 +80,16 @@ function DesktopArrow({ back = false }: { back?: boolean }) {
 export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
   const [isBoard, setIsBoard] = useState(initialBoard);
   const [boardVisited, setBoardVisited] = useState(initialBoard);
-  const [active, setActive] = useState<NoteId>("about");
-  const [stack, setStack] = useState<NoteId[]>(() => [...notes.slice(1).map((note) => note.id), "about"]);
-  const [closed, setClosed] = useState<NoteId[]>([]);
-  const [collapsed, setCollapsed] = useState<NoteId[]>([]);
-  const [palette, setPalette] = useState<Record<NoteId, StickyColor>>(() => Object.fromEntries(notes.map((note) => [note.id, note.color])) as Record<NoteId, StickyColor>);
+  const [active, setActive] = useDesktopPreference<NoteId>("portfolio:active", "about");
+  const [stack, setStack] = useDesktopPreference("portfolio:stack", defaultStack);
+  const [closed, setClosed] = useDesktopPreference<NoteId[]>("portfolio:closed", []);
+  const [collapsed, setCollapsed] = useDesktopPreference<NoteId[]>("portfolio:collapsed", []);
+  const [savedColors, setPalette] = useDesktopPreference<Partial<Record<NoteId, StickyColor>>>("portfolio:palette", {});
+  const palette = { ...defaultPalette, ...savedColors };
   const [menu, setMenu] = useState<string | null>(null);
   const [arrangement, setArrangement] = useState(0);
   const [clock, setClock] = useState("New York");
-  const [wallpaper, setWallpaper] = useState<string | null>(null);
+  const [wallpaper, setWallpaper] = useDesktopPreference<string | null>("wallpaper", null);
   const menuRef = useRef<HTMLElement>(null);
   const notesRef = useRef<HTMLElement>(null);
   const boardRef = useRef<HTMLElement>(null);
@@ -122,7 +126,15 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
     });
   }
   function toggleCollapsed(id: NoteId) { setCollapsed((previous) => previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id]); }
-  function reset() { setClosed([]); setCollapsed([]); setArrangement((value) => value + 1); setMenu(null); }
+  function reset() {
+    clearDesktopPreferences("window:portfolio:");
+    setClosed([]);
+    setCollapsed([]);
+    setActive("about");
+    setStack(defaultStack);
+    setArrangement((value) => value + 1);
+    setMenu(null);
+  }
   function closeNote(id: NoteId) {
     setClosed((previous) => [...new Set([...previous, id])]);
     const next = [...stack].reverse().find((item) => item !== id && !closed.includes(item));
@@ -165,7 +177,7 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
     window.addEventListener("hashchange", sync);
     window.addEventListener("popstate", sync);
     return () => { clearTimeout(initial); window.removeEventListener("hashchange", sync); window.removeEventListener("popstate", sync); };
-  }, []);
+  }, [setActive, setClosed, setCollapsed, setStack]);
 
   useEffect(() => {
     const update = () => setClock(new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date()).replaceAll(",", ""));

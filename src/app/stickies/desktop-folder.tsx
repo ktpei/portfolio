@@ -1,6 +1,7 @@
-import { useId, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import { useId, useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import Image from "next/image";
 import { useDialogBackdrop } from "../use-dialog-backdrop";
+import { useDesktopPreference } from "./use-desktop-preference";
 import styles from "./wallpapers.module.css";
 
 const directions: Record<string, [number, number]> = {
@@ -16,7 +17,7 @@ export function DesktopFolder({ name, slot, onOpen, children }: {
   const dialog = useRef<HTMLDialogElement>(null);
   const backdrop = useDialogBackdrop(() => dialog.current?.close());
   const titleId = useId();
-  const [position, setPosition] = useState<{ x: number; y: number }>();
+  const [position, setPosition, positionRestored] = useDesktopPreference<{ x: number; y: number } | undefined>(`folder:${name}`, undefined);
   const gesture = useRef<{ pointer: number; x: number; y: number; left: number; top: number } | null>(null);
   const moved = useRef(false);
   const touch = useRef(false);
@@ -62,7 +63,7 @@ export function DesktopFolder({ name, slot, onOpen, children }: {
   }
 
   return <>
-    <button type="button" className={styles.folder} aria-haspopup="dialog"
+    <button type="button" className={styles.folder} aria-haspopup="dialog" data-position-restored={positionRestored}
       style={{ "--slot": slot, "--folder-x": position && `${position.x}px`, "--folder-y": position && `${position.y}px` } as CSSProperties}
       onPointerDown={start} onPointerMove={drag} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={end}
       onClick={(event) => {
@@ -81,7 +82,7 @@ export function DesktopFolder({ name, slot, onOpen, children }: {
         const button = event.currentTarget;
         place(button, button.offsetLeft + direction[0] * 12, button.offsetTop + direction[1] * 12);
       }}>
-      <Image src="/desktop-folder.png" width={32} height={32} alt="" draggable={false} unoptimized />
+      <Image src="/desktop-folder.png" width={64} height={64} alt="" draggable={false} unoptimized />
       <span>{name}</span>
     </button>
     <dialog ref={dialog} {...backdrop} className={styles.dialog} aria-labelledby={titleId}>

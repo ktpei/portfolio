@@ -103,6 +103,15 @@
 .skip { position: fixed; z-index: 100; top: -70px; left: 20px; padding: 10px 20px; background: #fff6a0; color: #111; }
 .skip:focus { top: 36px; }
 .boardSurface { max-width: 1400px; margin: auto; padding: 32px; }
+.portfolioSpace { padding-left: 96px; }
+@media (min-width: 1000px) {
+  .workspace > .note {
+    max-width: calc(100% - 12px);
+    left: clamp(0px, calc(var(--left) + var(--offset-x)), calc(100% - min(var(--width), 100% - 12px)));
+    top: clamp(0px, calc(var(--top) + var(--offset-y)), calc(100% - 28px));
+    transform: none;
+  }
+}
 @media (min-width: 1000px) {
   .space { --desktop-edge: max(78px, calc((100% - 1440px) / 2)); }
   .portfolioSpace { padding-right: var(--desktop-edge); }
@@ -137,6 +146,7 @@
   .edgeLink { margin-right: 19px; }
   .boardSpace .edgeLink { margin-left: 19px; }
   .workspace { grid-template-columns: 1fr; padding: 18px 19px 25px; gap: 24px; }
+  .portfolioSpace .workspace { padding-inline: 0 12px; }
   .note { max-height: none; }
   .noteBody { max-height: none; overflow: visible; padding: 18px; }
   .noteBar { height: 30px; min-height: 30px; }
@@ -145,9 +155,5 @@
   .footer { font-size: 12px; gap: 15px; flex-wrap: wrap; padding: 0 19px 20px; }
   .footer > span { width: 100%; }
   .boardSurface { padding: 20px 19px 24px; }
-}
-@media (max-width: 360px) {
-  .portfolioSpace .edgeLink { margin-right: 6px; }
-  .portfolioSpace .edgeLink > span { padding-inline: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { .space { transition: none; } }
