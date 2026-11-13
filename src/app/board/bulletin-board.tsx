@@ -179,7 +179,7 @@ function BoardView({ active, live }: BoardProps & { live?: LiveBoard }) {
     </div>
     {connection === "offline" && <p role="status" className={styles.notice}>Reconnecting to the board. Showing the last loaded ideas.</p>}
     {reactionError && <p role="alert" className={styles.notice}>{reactionError}</p>}
-    {visibleNotes.length ? <div className={styles.notesScroll} data-board-notes><div className={`${stickyStyles.workspace} ${styles.workspace}`} style={{ "--rows": Math.ceil(notes.length / 3) } as CSSProperties}>
+    {visibleNotes.length ? <div className={styles.notesScroll}><div className={`${stickyStyles.workspace} ${styles.workspace}`} style={{ "--rows": Math.ceil(notes.length / 3) } as CSSProperties}>
       {notes.map((note, position) => {
         if (closed.includes(note.id)) return null;
         const title = notePlainText(note.title);

@@ -43,12 +43,11 @@
 .wipBanner { display: flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 10px; padding: 9px 16px; margin: 0; background: #fff6a0; color: #493d16; font-size: 13px; line-height: 1.4; }
 .wipBanner strong { flex-shrink: 0; white-space: nowrap; font-size: 11px; letter-spacing: .08em; border: 1px solid currentColor; border-radius: 3px; padding: 1px 5px; }
 .spaces { position: relative; flex: 1; min-height: 0; overflow: clip; }
-.space { position: absolute; inset: 0; min-width: 0; translate: var(--desktop-swipe) 0; transition: translate 400ms cubic-bezier(.28, .72, .22, 1); }
-.spaces[data-swiping] .space { transition: none; }
+.space { position: absolute; inset: 0; min-width: 0; translate: 0 0; transition: translate 400ms cubic-bezier(.28, .72, .22, 1); }
 .space:focus { outline: none; }
 .space[inert] { pointer-events: none; }
-.portfolioSpace[inert] { translate: calc(-100% + var(--desktop-swipe)) 0; }
-.boardSpace[inert] { translate: calc(100% + var(--desktop-swipe)) 0; }
+.portfolioSpace[inert] { translate: -100% 0; }
+.boardSpace[inert] { translate: 100% 0; }
 .edgeLink { display: flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 12px; color: #293e4e; font-size: 13px; font-weight: 650; line-height: 1.2; }
 .edgeLink svg { flex: none; }
 .workspace { position: relative; max-width: 1440px; margin: 0 auto; }
@@ -107,7 +106,7 @@
 .skip { position: fixed; z-index: 100; top: -70px; left: 20px; padding: 10px 20px; background: #fff6a0; color: #111; }
 .skip:focus { top: 36px; }
 .boardSurface { height: 100%; max-width: 1400px; margin: auto; padding: 24px 32px 12px; }
-.portfolioSpace { padding-left: 96px; touch-action: pinch-zoom; }
+.portfolioSpace { padding-left: 96px; }
 .portfolioSpace > .workspace { height: 100%; width: 100%; }
 .portfolioSpace .noteBody { overflow: clip; }
 .portfolioSpace .noteTitle { opacity: 1; }
@@ -173,6 +172,5 @@
   .boardSurface { padding: 20px 19px 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .spaces { --desktop-swipe: 0px !important; }
   .space { transition: none; }
 }
