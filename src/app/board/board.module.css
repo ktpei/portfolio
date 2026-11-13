@@ -36,7 +36,8 @@
   color: #35434e;
 }
 
-.notesScroll { flex: 1; min-height: 0; overflow: hidden auto; overscroll-behavior: contain; touch-action: pan-y pinch-zoom; }
+.notesScroll { flex: 1; min-height: 0; overflow: hidden auto; scrollbar-width: none; overscroll-behavior: contain; touch-action: pan-y pinch-zoom; }
+.notesScroll:focus-visible { outline: 2px solid #1859a5; outline-offset: -2px; }
 .board .workspace { isolation: isolate; }
 
 @media (min-width: 1000px) {
