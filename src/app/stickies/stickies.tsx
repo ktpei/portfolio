@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { education, intro, links, projects, site, skills, work } from "@/content";
+import { Wallpapers } from "./wallpapers";
 import styles from "./stickies.module.css";
 
 type Color = "yellow" | "blue" | "pink" | "green" | "purple" | "gray";
@@ -72,6 +73,7 @@ export function Stickies({ children, board = false }: { children?: ReactNode; bo
   const [menu, setMenu] = useState<string | null>(null);
   const [arrangement, setArrangement] = useState(0);
   const [clock, setClock] = useState("New York");
+  const [wallpaper, setWallpaper] = useState<string | null>(null);
   const menuRef = useRef<HTMLElement>(null);
 
   function activate(id: NoteId) {
@@ -138,7 +140,8 @@ export function Stickies({ children, board = false }: { children?: ReactNode; bo
     return <div className={styles.menuGroup}><button data-menu={label} className={`${styles.menuButton} ${menu === label ? styles.menuSelected : ""}`} aria-expanded={menu === label} aria-controls={`menu-${label}`} onClick={() => setMenu(menu === label ? null : label)} onKeyDown={(event) => { if (event.key === "ArrowDown") { event.preventDefault(); setMenu(label); requestAnimationFrame(() => document.getElementById(`menu-${label}`)?.querySelector<HTMLButtonElement>("button, a")?.focus()); } }}>{label}</button>{menu === label && <div id={`menu-${label}`} className={styles.dropdown} onKeyDown={(event) => { if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return; event.preventDefault(); const items = [...event.currentTarget.querySelectorAll<HTMLElement>("button:not(:disabled), a")]; const index = items.indexOf(document.activeElement as HTMLElement); items[(index + (event.key === "ArrowDown" ? 1 : -1) + items.length) % items.length]?.focus(); }}>{content}</div>}</div>;
   }
 
-  return <div className={styles.desktop}>
+  return <div className={`${styles.desktop}${wallpaper ? ` ${styles.customWallpaper}` : ""}`}>
+    {wallpaper && <div className={styles.wallpaperBackdrop} style={{ backgroundImage: `url(${wallpaper})` }} aria-hidden="true" />}
     <a className={styles.skip} href="#notes">Skip to notes</a>
     <header className={styles.menuBar} ref={menuRef}>
       <Link href="/" className={styles.brand} aria-label="Kevin Pei home">kp</Link>
@@ -150,10 +153,13 @@ export function Stickies({ children, board = false }: { children?: ReactNode; bo
       <div className={styles.menuRight}><span className={styles.owner}>{site.name}</span><time aria-label={`New York time: ${clock}`}>{clock}</time></div>
     </header>
     <p className={styles.wipBanner}><strong>WIP</strong><span>This portfolio is a work in progress.</span></p>
+    <div className={styles.wallpaperDesktop} data-board-desktop={board || undefined}>
+      <Wallpapers current={wallpaper} onSelect={setWallpaper} onOpen={() => setMenu(null)} />
     {board ? <main id="notes" className={styles.boardSurface}><Link href="/" className={styles.back}>← Back to my notes</Link>{children}</main> : <main id="notes" className={styles.workspace} aria-label="Kevin Pei’s notes">
       {notes.filter((note) => !closed.includes(note.id)).map((note) => <StickyWindow key={`${note.id}-${arrangement}`} note={note} active={active === note.id} color={palette[note.id]} order={stack.indexOf(note.id) + 1} collapsed={collapsed.includes(note.id)} onActivate={() => activate(note.id)} onClose={() => closeNote(note.id)} onCollapse={() => toggleCollapsed(note.id)}><NoteContent id={note.id} /></StickyWindow>)}
       {closed.length === notes.length && <div className={styles.empty}><p>All tucked away.</p><button onClick={reset}>Reopen my notes</button></div>}
     </main>}
     {!board && <footer className={styles.footer}><span>Kevin Pei’s desktop</span><button onClick={reset}>Arrange all notes</button><Link href="/board">Idea board</Link></footer>}
+    </div>
   </div>;
 }

@@ -48,6 +48,7 @@ Vercel prints the nameservers or A/CNAME records to set at the registrar.
 - Stickies, File, Color, Window, and Help menus; Window reopens closed notes and Arrange All restores the layout
 - Direct `#work`, `#projects`, `#contact`, `#education`, and `#toolkit` links; `/#stickies` forwards to the live idea board
 - Keyboard-operable menus, skip link, visible focus states, and scrollable note content
+- The Wallpapers folder floats above the upper-left desktop and lets visitors pick or shuffle backgrounds from `public/wallpapers`. See [wallpaper context](docs/wallpapers.md) for the collection and placement decisions.
 - Responsive layout: desktop notes float freely; tablet notes form two columns; mobile notes stack in reading order
 - Homepage and board shell in `src/app/stickies/`; content remains in `src/content.ts`
 - Layout and color adjustments are temporary browser-session state; the portfolio’s source content is not editable by visitors

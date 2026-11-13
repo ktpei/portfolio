@@ -11,6 +11,11 @@
 .desktop button { cursor: pointer; font: inherit; }
 .desktop :is(button, a, summary):focus-visible { outline: 2px solid #1859a5; outline-offset: 3px; }
 .desktop ::selection { background: #82b5e8; color: #111; }
+.wallpaperDesktop { position: relative; }
+.wallpaperDesktop[data-board-desktop] { --wallpapers-left: 160px; }
+.wallpaperBackdrop { position: fixed; inset: 0; z-index: -1; background-position: center; background-size: cover; }
+.customWallpaper :is(.back, .footer > *, .empty) { background: #f3f6f8; border-radius: 6px; }
+.customWallpaper .footer > * { width: auto; padding: 5px 8px; }
 .menuBar { height: 30px; position: sticky; top: 0; z-index: 50; display: flex; align-items: stretch; padding: 0 17px; background: #e8eceee0; border-bottom: 1px solid #77828a55; box-shadow: 0 1px 3px #0000000a; backdrop-filter: blur(20px); font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; font-size: 13px; }
 .brand { display: flex; align-items: center; padding: 0 15px 2px 4px; font-weight: 750; letter-spacing: -1px; font-size: 19px; }
 .menuGroup { position: relative; }
