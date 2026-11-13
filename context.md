@@ -12,7 +12,7 @@ The September WIP release was pushed to `main` at `59ed879` for Vercel. Kevin as
 - Wallpapers was initially a menu item, then a left-side row. Kevin clarified that it should be a floating desktop folder that leaves the stickies in place. He requested drag, additional folders, the exact supplied sprite, a vertical arrangement, larger icons, and persistence after refresh. Wallpapers, Files, and Archive belong to the portfolio desktop. The wallpaper itself is shared across both desktops.
 - The folder column starts with 64 px icons and 100 px vertical spacing on the wide layout. After Kevin reported a position jump on refresh, the launchers were hidden until their saved positions were restored. See the [folder and wallpaper guide](docs/wallpapers.md).
 - Kevin supplied a Finder screenshot for Files, then asked to revert the resulting dark Finder window. `a667c64` restored the original window with a résumé link. The broader macOS fidelity standard still applies.
-- The later desktop update fixed the portfolio surface and added scroll and swipe navigation between desktops. The board notes scroll in their own area, and portfolio notes offer a title-bar reading view for longer text. The menu, WIP banner, and desktop shortcut stay in view. The portfolio footer stays at the bottom.
+- The later desktop update fixed the portfolio surface. Scroll and swipe navigation between desktops was tried and removed. Edge shortcuts and menu commands switch desktops. The board notes scroll in their own area, and portfolio notes offer a title-bar reading view for longer text. The menu, WIP banner, and desktop shortcut stay in view. The portfolio footer stays at the bottom.
 
 ## Portfolio copy
 
@@ -31,5 +31,5 @@ The September WIP release was pushed to `main` at `59ed879` for Vercel. Kevin as
 ## Verification and open work
 
 - On November 13, 2026, the live `GET /api/board` reported `connected` with 11 ideas. The earlier Convex rollout chat reported that comments, sticky edits, and moderation appeared across two browser sessions without reload. The live write check was not rerun during this documentation pass. [Live Ideas Board](https://kevinpei.dev/board)
-- At the start of the November 13 documentation pass, GitHub `main` pointed to the September WIP commit, and the desktop and board changes had an open PR from `codex/floating-wallpapers`. The release work then combined the PR's scrolling changes with the local intro and résumé changes. Check the deployed version independently of GitHub branch history when validating a release. [Portfolio PR #1](https://github.com/ktpei/portfolio/pull/1)
+- At the start of the November 13 release, GitHub `main` pointed to the September WIP commit. The release pull request combines the desktop and board work with the updated intro and résumé. Check the live version independently of GitHub branch history when validating a release. [Portfolio PR #1](https://github.com/ktpei/portfolio/pull/1)
 - The committed PDF link was checked in code. Earlier browser checks were mixed across changes, so verify the combined desktop and board flows after integration using [the project checklist](project.md#macos-review).
