@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useEffectEvent, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -80,6 +80,8 @@ function DesktopArrow({ back = false }: { back?: boolean }) {
 export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
   const [isBoard, setIsBoard] = useState(initialBoard);
   const [boardVisited, setBoardVisited] = useState(initialBoard);
+  const [swipe, setSwipe] = useState(0);
+  const [reading, setReading] = useState<NoteId | null>(null);
   const [active, setActive] = useDesktopPreference<NoteId>("portfolio:active", "about");
   const [stack, setStack] = useDesktopPreference("portfolio:stack", defaultStack);
   const [closed, setClosed] = useDesktopPreference<NoteId[]>("portfolio:closed", []);
@@ -91,12 +93,18 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
   const [clock, setClock] = useState("New York");
   const [wallpaper, setWallpaper] = useDesktopPreference<string | null>("wallpaper", null);
   const menuRef = useRef<HTMLElement>(null);
+  const spacesRef = useRef<HTMLElement>(null);
   const notesRef = useRef<HTMLElement>(null);
   const boardRef = useRef<HTMLElement>(null);
+  const readingDialog = useRef<HTMLDialogElement>(null);
 
   function switchDesktop(event: MouseEvent<HTMLAnchorElement>, nextIsBoard: boolean, noteId?: NoteId) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
+    navigateDesktop(nextIsBoard, noteId);
+  }
+
+  function navigateDesktop(nextIsBoard: boolean, noteId?: NoteId) {
     setMenu(null);
     const url = nextIsBoard ? "/#stickies" : noteId ? `/#${noteId}` : "/";
     if ((!nextIsBoard || !isBoard) && url !== location.pathname + location.search + location.hash) {
@@ -105,7 +113,6 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
     if (isBoard !== nextIsBoard) {
       if (nextIsBoard) setBoardVisited(true);
       setIsBoard(nextIsBoard);
-      window.scrollTo({ top: 0, behavior: "instant" });
     }
     if (noteId) show(noteId);
     else requestAnimationFrame(() => (nextIsBoard ? boardRef : notesRef).current?.focus({ preventScroll: true }));
@@ -122,7 +129,6 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
     requestAnimationFrame(() => {
       const element = document.getElementById(id);
       element?.focus({ preventScroll: true });
-      element?.scrollIntoView({ behavior: "instant", block: "nearest" });
     });
   }
   function toggleCollapsed(id: NoteId) { setCollapsed((previous) => previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id]); }
@@ -157,7 +163,6 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
       if (nextIsBoard) {
         setBoardVisited(true);
         if (changed) {
-          window.scrollTo({ top: 0, behavior: "instant" });
           requestAnimationFrame(() => nextDesktop.focus({ preventScroll: true }));
         }
         return;
@@ -168,7 +173,6 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
         setCollapsed((previous) => previous.filter((item) => item !== note.id));
         setActive(note.id);
         setStack((previous) => [...previous.filter((item) => item !== note.id), note.id]);
-        requestAnimationFrame(() => document.getElementById(note.id)?.scrollIntoView({ block: "nearest", inline: "nearest" }));
       } else if (changed) {
         requestAnimationFrame(() => nextDesktop.focus({ preventScroll: true }));
       }
@@ -178,6 +182,90 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
     window.addEventListener("popstate", sync);
     return () => { clearTimeout(initial); window.removeEventListener("hashchange", sync); window.removeEventListener("popstate", sync); };
   }, [setActive, setClosed, setCollapsed, setStack]);
+
+  const finishSwipe = useEffectEvent((origin: boolean, distance: number, width: number) => {
+    setSwipe(0);
+    if (origin === isBoard && Math.abs(distance) >= Math.min(120, width * 0.24)) navigateDesktop(!origin);
+  });
+
+  useEffect(() => {
+    const spaces = spacesRef.current;
+    const desktop = spaces?.parentElement;
+    if (!spaces || !desktop) return;
+    const viewport = spaces;
+    const surface = desktop;
+    let distance = 0;
+    let fromBoard = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+
+    function finish() {
+      finishSwipe(fromBoard, distance, viewport.clientWidth);
+      distance = 0;
+    }
+
+    function move(target: EventTarget | null, delta: number) {
+      if (!(target instanceof Element) || surface.querySelector("dialog[open]")) return false;
+      if (target.closest(`.${styles.menuBar}, .${styles.footer}`)) return false;
+      const boardActive = !boardRef.current?.inert;
+      if (!distance) {
+        if ((boardActive ? delta >= 0 : delta <= 0)) return false;
+        const notes = boardRef.current?.querySelector("[data-board-notes]");
+        const body = target.closest(`.${styles.noteBody}`);
+        if (boardActive && ((notes?.scrollTop ?? 0) > 0 || (body?.scrollTop ?? 0) > 0)) return false;
+        fromBoard = boardActive;
+        if (!fromBoard) setBoardVisited(true);
+      }
+      if (fromBoard !== boardActive) return false;
+      const width = viewport.clientWidth;
+      distance = fromBoard ? Math.max(-width, Math.min(0, distance + delta)) : Math.min(width, Math.max(0, distance + delta));
+      setSwipe(distance);
+      return true;
+    }
+
+    function wheel(event: WheelEvent) {
+      if (event.ctrlKey || event.metaKey || !event.cancelable) return;
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewport.clientHeight : 1;
+      if (!move(event.target, delta * unit)) return;
+      event.preventDefault();
+      clearTimeout(timeout);
+      timeout = setTimeout(finish, 140);
+    }
+
+    let touch: Touch | undefined;
+    function startTouch(event: TouchEvent) { touch = event.touches.length === 1 ? event.touches[0] : undefined; }
+    function moveTouch(event: TouchEvent) {
+      if (!touch || event.touches.length !== 1 || !event.cancelable) return;
+      const next = event.touches[0];
+      const deltaX = touch.clientX - next.clientX;
+      const deltaY = touch.clientY - next.clientY;
+      touch = next;
+      if (move(event.target, Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY)) event.preventDefault();
+    }
+    function endTouch() {
+      touch = undefined;
+      if (distance) finish();
+    }
+
+    desktop.addEventListener("wheel", wheel, { passive: false });
+    spaces.addEventListener("touchstart", startTouch, { passive: true });
+    spaces.addEventListener("touchmove", moveTouch, { passive: false });
+    spaces.addEventListener("touchend", endTouch);
+    function cancelTouch() {
+      touch = undefined;
+      distance = 0;
+      setSwipe(0);
+    }
+    spaces.addEventListener("touchcancel", cancelTouch);
+    return () => {
+      clearTimeout(timeout);
+      desktop.removeEventListener("wheel", wheel);
+      spaces.removeEventListener("touchstart", startTouch);
+      spaces.removeEventListener("touchmove", moveTouch);
+      spaces.removeEventListener("touchend", endTouch);
+      spaces.removeEventListener("touchcancel", cancelTouch);
+    };
+  }, []);
 
   useEffect(() => {
     const update = () => setClock(new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date()).replaceAll(",", ""));
@@ -257,7 +345,10 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
       <div className={styles.menuRight}><span className={styles.owner}>{site.name}</span><time aria-label={`New York time: ${clock}`}>{clock}</time></div>
     </header>
     <p className={styles.wipBanner}><strong>WIP</strong><span>This portfolio is a work in progress.</span></p>
-    <main className={styles.spaces}>
+    <Link href={isBoard ? "/" : "/#stickies"} className={`${styles.edgeLink}${isBoard ? ` ${styles.backLink}` : ""}`} onClick={(event) => switchDesktop(event, !isBoard)}>
+      {isBoard ? <><DesktopArrow back /> Portfolio</> : <>Idea Board <DesktopArrow /></>}
+    </Link>
+    <main ref={spacesRef} className={styles.spaces} data-swiping={swipe !== 0 || undefined} style={{ "--desktop-swipe": `${-swipe}px` } as CSSProperties}>
       <section ref={notesRef} id="notes" tabIndex={-1} inert={isBoard} className={`${styles.space} ${styles.portfolioSpace}`} aria-label="Kevin Pei’s notes">
         <DesktopFolder name="Wallpapers" slot={0} onOpen={() => setMenu(null)}>
           <WallpaperPicker current={wallpaper} onSelect={setWallpaper} />
@@ -270,21 +361,22 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
           </div>
         </DesktopFolder>
         <DesktopFolder name="Archive" slot={2} onOpen={() => setMenu(null)} />
-        <Link href="/#stickies" className={styles.edgeLink} onClick={(event) => switchDesktop(event, true)}>
-          <span>Idea Board <DesktopArrow /></span>
-        </Link>
         <div className={styles.workspace}>
-          {notes.filter((note) => !closed.includes(note.id)).map((note) => <StickyWindow key={`${note.id}-${arrangement}`} note={note} active={active === note.id} color={palette[note.id]} order={stack.indexOf(note.id) + 1} collapsed={collapsed.includes(note.id)} onActivate={() => activate(note.id)} onClose={() => closeNote(note.id)} onCollapse={() => toggleCollapsed(note.id)}><NoteContent id={note.id} /></StickyWindow>)}
+          {notes.filter((note) => !closed.includes(note.id)).map((note) => <StickyWindow key={`${note.id}-${arrangement}`} note={note} active={active === note.id} color={palette[note.id]} order={stack.indexOf(note.id) + 1} collapsed={collapsed.includes(note.id)} onActivate={() => activate(note.id)} onClose={() => closeNote(note.id)} onCollapse={() => toggleCollapsed(note.id)} titleBarActions={<button type="button" className={styles.readNote} aria-label={`Read ${note.title}`} aria-haspopup="dialog" title="Read full note" onClick={() => {
+            setReading(note.id);
+            readingDialog.current?.showModal();
+          }}>↗</button>}><NoteContent id={note.id} /></StickyWindow>)}
           {closed.length === notes.length && <div className={styles.empty}><p>All tucked away.</p><button onClick={reset}>Reopen my notes</button></div>}
         </div>
-        <footer className={styles.footer}><span>Kevin Pei’s desktop</span><button onClick={reset}>Arrange all notes</button></footer>
       </section>
       <section ref={boardRef} id="board-desktop" tabIndex={-1} inert={!isBoard} className={`${styles.space} ${styles.boardSpace}`} aria-label="Idea Board desktop">
-        <Link href="/" className={styles.edgeLink} onClick={(event) => switchDesktop(event, false)}>
-          <span><DesktopArrow back /> Portfolio</span>
-        </Link>
         <div className={styles.boardSurface}>{boardVisited && <BulletinBoard active={isBoard} />}</div>
       </section>
     </main>
+    {!isBoard && <footer className={styles.footer}><span>Kevin Pei’s desktop</span><button onClick={reset}>Arrange all notes</button></footer>}
+    <dialog ref={readingDialog} className={`${styles.readingDialog} ${reading ? styles[palette[reading]] : ""}`} aria-label={notes.find((note) => note.id === reading)?.title} onClose={() => setReading(null)}>
+      <form method="dialog"><button>Close</button></form>
+      {reading && <div className={styles.noteBody}><NoteContent id={reading} /></div>}
+    </dialog>
   </div>;
 }

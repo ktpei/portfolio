@@ -11,7 +11,7 @@ The September WIP release was pushed to `main` at `59ed879` for Vercel. Kevin as
 - Kevin specified **1:1 native macOS** as the reference for icons, interface, and behavior. Use the matching native surface and his screenshots for visual details. Use Apple's guidance for the platform's interaction patterns. [Apple's Designing for macOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-macos)
 - Wallpapers was initially a menu item, then a left-side row. Kevin clarified that it should be a floating desktop folder that leaves the stickies in place. He requested drag, additional folders, the exact supplied sprite, a vertical arrangement, larger icons, and persistence after refresh. Wallpapers, Files, and Archive belong to the portfolio desktop. The wallpaper itself is shared across both desktops.
 - The folder column starts with 64 px icons and 100 px vertical spacing on the wide layout. After Kevin reported a position jump on refresh, the launchers were hidden until their saved positions were restored. See the [folder and wallpaper guide](docs/wallpapers.md).
-- Kevin supplied a Finder screenshot for Files, then asked to revert the resulting dark Finder window. Files is back to the original window with a résumé link.
+- Kevin supplied a Finder screenshot for Files, then asked to revert the resulting dark Finder window. `a667c64` restored the original window with a résumé link. The broader macOS fidelity standard still applies.
 
 ## Portfolio copy
 

@@ -179,7 +179,7 @@ function BoardView({ active, live }: BoardProps & { live?: LiveBoard }) {
     </div>
     {connection === "offline" && <p role="status" className={styles.notice}>Reconnecting to the board. Showing the last loaded ideas.</p>}
     {reactionError && <p role="alert" className={styles.notice}>{reactionError}</p>}
-    {visibleNotes.length ? <div className={`${stickyStyles.workspace} ${styles.workspace}`} style={{ "--rows": Math.ceil(notes.length / 3) } as CSSProperties}>
+    {visibleNotes.length ? <div className={styles.notesScroll} data-board-notes><div className={`${stickyStyles.workspace} ${styles.workspace}`} style={{ "--rows": Math.ceil(notes.length / 3) } as CSSProperties}>
       {notes.map((note, position) => {
         if (closed.includes(note.id)) return null;
         const title = notePlainText(note.title);
@@ -208,7 +208,7 @@ function BoardView({ active, live }: BoardProps & { live?: LiveBoard }) {
           {ownerKey && <button type="button" className={styles.edit} aria-haspopup="dialog" disabled={!writable} onClick={(event) => openDialog({ kind: "edit", id: note.id }, event.currentTarget)}>Edit</button>}
         </StickyWindow>;
       })}
-    </div> : <p className={styles.notice}>{notes.length ? "All notes are closed." : "No ideas here."}</p>}
+    </div></div> : <p className={styles.notice}>{notes.length ? "All notes are closed." : "No ideas here."}</p>}
     {dialog?.kind === "unlock" && <Dialog title="Owner access" onClose={closeDialog}>
       <OwnerUnlock onUnlock={(key) => { setOwnerKey(key); closeDialog(ownerButton.current); }} />
     </Dialog>}
