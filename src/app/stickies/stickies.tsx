@@ -17,7 +17,7 @@ type NoteId = "about" | "work" | "projects" | "contact" | "education" | "toolkit
 type Note = StickyPlacement & { id: NoteId; color: StickyColor };
 const colors: StickyColor[] = ["yellow", "blue", "pink", "green", "purple", "gray"];
 const notes: Note[] = [
-  { id: "about", title: "Hello, I’m Kevin.", color: "yellow", x: 3, y: 52, width: 28, height: 386 },
+  { id: "about", title: intro.title, color: "yellow", x: 3, y: 52, width: 28, height: 386 },
   { id: "work", title: "Where I’ve been working", color: "blue", x: 36, y: 91, width: 29, height: 417 },
   { id: "projects", title: "Things I’ve built", color: "pink", x: 69, y: 48, width: 28, height: 475 },
   { id: "contact", title: "Let’s keep in touch", color: "green", x: 5, y: 470, width: 27, height: 242 },
@@ -30,7 +30,7 @@ const defaultStack: NoteId[] = [...notes.slice(1).map((note) => note.id), "about
 function NoteContent({ id }: { id: NoteId }) {
   if (id === "about") return <>
     <div className={styles.profile}>
-      <div><h1>Hello, I’m Kevin.</h1><p>{site.role}<br />{site.location}</p></div>
+      <div><h1>{intro.title}</h1><p>{site.role}<br />{site.location}</p></div>
       <Image
         src="/kevin-portrait.webp"
         alt="Kevin Pei by the waterfront with the New York City skyline behind him"
@@ -40,8 +40,7 @@ function NoteContent({ id }: { id: NoteId }) {
         className={styles.portrait}
       />
     </div>
-    <p>{intro[0]}</p>
-    <p>{intro[1]}</p>
+    {intro.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
   </>;
   if (id === "work") return <>
     <h2>Where I’ve been working</h2>

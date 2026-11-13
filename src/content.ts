@@ -8,10 +8,13 @@ export const site = {
   status: "Open to Summer 2027 internships",
 };
 
-export const intro = [
-  "I build backend systems and the infrastructure that agents run on.",
-  "Computer science at NYU. Currently shipping at Korr Insurtech and leading server development at NYU's High Speed Research Lab. Outside of work, I build award-winning agent tooling.",
-];
+export const intro = {
+  title: "hey, I’m Kevin.",
+  paragraphs: [
+    "I build agentic systems and also small projects for the people around me",
+    "Computer science at NYU. Currently leading server development at NYU's High Speed Research Lab.",
+  ],
+};
 
 export const links = [
   { label: "Email", href: "mailto:kevinxpei@gmail.com", display: "kevinxpei@gmail.com" },
