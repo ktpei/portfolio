@@ -205,9 +205,9 @@ function BoardView({ active, live }: BoardProps & { live?: LiveBoard }) {
     {(dialog?.kind === "new" || dialog?.kind === "edit") && <Dialog title={dialog.kind === "edit" ? "Edit sticky" : "New sticky"} onClose={closeDialog}>
       {dialog.kind === "new" || selectedNote ? <NoteEditor note={selectedNote} disabled={!writable} mutate={mutate} onDone={(removed) => closeDialog(removed ? arrangeButton.current : dialogTrigger.current)} /> : <p>This sticky was removed.</p>}
     </Dialog>}
-    {dialog?.kind === "comments" && <Dialog title={selectedNote ? `Comments on ${notePlainText(selectedNote.title)}` : "Comments"} onClose={closeDialog}>
+    {dialog?.kind === "comments" && <Dialog title={selectedNote ? `Comments on ${notePlainText(selectedNote.title)}` : "Comments"} onClose={closeDialog} sheet={!!selectedNote}>
       {selectedNote ? <Comments noteId={selectedNote.id} comments={data.comments.filter((comment) => comment.noteId === selectedNote.id)}
-        canModerate={!!ownerKey} writable={writable} mutate={mutate} /> : <p>This sticky was removed.</p>}
+        canModerate={!!ownerKey} writable={writable} mutate={mutate} onClose={() => closeDialog()} /> : <p>This sticky was removed.</p>}
     </Dialog>}
   </section>;
 }

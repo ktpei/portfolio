@@ -6,7 +6,7 @@ import styles from "./board.module.css";
 
 export type Mutate = (body: Record<string, unknown>) => Promise<void>;
 
-export function Dialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+export function Dialog({ title, onClose, children, sheet = false }: { title: string; onClose: () => void; children: ReactNode; sheet?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   useLayoutEffect(() => {
@@ -15,10 +15,10 @@ export function Dialog({ title, onClose, children }: { title: string; onClose: (
     return () => dialog?.close();
   }, []);
 
-  return <dialog ref={ref} className={styles.dialog} aria-labelledby={titleId} onCancel={(event) => { event.preventDefault(); onClose(); }}>
+  return <dialog ref={ref} className={sheet ? `${styles.dialog} ${styles.commentSheet}` : styles.dialog} aria-labelledby={titleId} onCancel={(event) => { event.preventDefault(); onClose(); }}>
     <header className={styles.dialogHeader}>
       <h2 id={titleId}>{title}</h2>
-      <button type="button" onClick={() => onClose()} aria-label="Close dialog">×</button>
+      {!sheet && <button type="button" onClick={() => onClose()} aria-label="Close dialog">×</button>}
     </header>
     {children}
   </dialog>;
@@ -100,8 +100,8 @@ export function NoteEditor({ note, disabled, mutate, onDone }: { note?: BoardNot
   </form>;
 }
 
-export function Comments({ noteId, comments, canModerate, writable, mutate }: {
-  noteId: string; comments: BoardComment[]; canModerate: boolean; writable: boolean; mutate: Mutate;
+export function Comments({ noteId, comments, canModerate, writable, mutate, onClose }: {
+  noteId: string; comments: BoardComment[]; canModerate: boolean; writable: boolean; mutate: Mutate; onClose: () => void;
 }) {
   const [body, setBody] = useState("");
   const [name, setName] = useState("");
@@ -132,32 +132,23 @@ export function Comments({ noteId, comments, canModerate, writable, mutate }: {
     });
   }
 
-  async function copyLink() {
-    const url = new URL("/board", window.location.origin);
-    url.searchParams.set("idea", noteId);
-    try {
-      await navigator.clipboard.writeText(url.href);
-      setNotice("Link copied.");
-    } catch {
-      setNotice("Couldn’t copy the link.");
-    }
-  }
-
   return <>
-    <button type="button" className={styles.shareLink} onClick={() => void copyLink()}>Copy idea link</button>
-    {comments.length ? <ol className={styles.comments}>{comments.map((comment) => <li key={comment.id}>
+    {comments.length > 0 && <ol className={styles.comments}>{comments.map((comment) => <li key={comment.id}>
       <p><strong>{comment.name}</strong></p>
       <p>{comment.body}</p>
-      {canModerate && <button type="button" disabled={!writable || busy} onClick={() => void write({ action: "delete-comment", id: comment.id }, () => setNotice("Comment removed."))}>Remove comment by {comment.name}</button>}
-    </li>)}</ol> : <p>No comments yet.</p>}
+      {canModerate && <button type="button" aria-label={`Remove comment by ${comment.name}`} disabled={!writable || busy} onClick={() => void write({ action: "delete-comment", id: comment.id }, () => setNotice("Comment removed."))}>Remove</button>}
+    </li>)}</ol>}
     <form className={styles.form} onSubmit={post}>
       <label>Name<input name="name" value={name} onChange={(event) => setName(event.target.value)} autoComplete="nickname" maxLength={60} required /></label>
-      <label>Comment<textarea name="comment" value={body} onChange={(event) => setBody(event.target.value)} rows={3} maxLength={1000} required readOnly={busy} /></label>
+      <label>Public comment<textarea name="comment" value={body} onChange={(event) => setBody(event.target.value)} rows={3} maxLength={1000} required readOnly={busy} /></label>
       <label hidden>Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
-      <div className={styles.formActions}><button type="submit" disabled={!writable || busy || !name.trim() || !body.trim()}>Post comment</button><span>Comments are public.</span></div>
+      {!writable && <p>Posting is unavailable.</p>}
+      {error && <p role="alert">{error}</p>}
+      <p role="status" className={styles.commentStatus}>{notice}</p>
+      <div className={styles.formActions}>
+        <button type="button" onClick={onClose}>Close</button>
+        <button type="submit" disabled={!writable || busy || !name.trim() || !body.trim()}>{busy ? "Posting…" : "Post"}</button>
+      </div>
     </form>
-    {!writable && <p>Posting is unavailable while the board is offline or in preview.</p>}
-    {error && <p role="alert">{error}</p>}
-    <p role="status">{notice}</p>
   </>;
 }
