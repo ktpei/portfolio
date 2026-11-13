@@ -54,6 +54,6 @@ export function StickyWindow({ note, color, active, order, collapsed, onActivate
       {titleBarActions}
       <button type="button" className={styles.collapseControl} aria-label={`${collapsed ? "Expand" : "Collapse"} ${note.title}`} title={collapsed ? "Expand note" : "Collapse note"} onClick={onCollapse} aria-expanded={!collapsed}><span /></button>
     </header>
-    {!collapsed && <><div className={bodyClassName ? `${styles.noteBody} ${bodyClassName}` : styles.noteBody} inert={space === "portfolio"} tabIndex={space === "board" ? 0 : undefined} role="region" aria-label={`${note.title} content`}>{children}</div><span className={styles.resizeGrip} aria-hidden="true" onPointerDown={(event) => start(event, "resize")} onPointerMove={move} onPointerUp={() => { gesture.current = null; }} onPointerCancel={() => { gesture.current = null; }} /></>}
+    {!collapsed && <><div className={bodyClassName ? `${styles.noteBody} ${bodyClassName}` : styles.noteBody} tabIndex={0} role="region" aria-label={`${note.title} content`}>{children}</div><span className={styles.resizeGrip} aria-hidden="true" onPointerDown={(event) => start(event, "resize")} onPointerMove={move} onPointerUp={() => { gesture.current = null; }} onPointerCancel={() => { gesture.current = null; }} /></>}
   </article>;
 }

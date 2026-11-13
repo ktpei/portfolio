@@ -108,13 +108,8 @@
 .boardSurface { height: 100%; max-width: 1400px; margin: auto; padding: 24px 32px 12px; }
 .portfolioSpace { padding-left: 96px; }
 .portfolioSpace > .workspace { height: 100%; width: 100%; }
-.portfolioSpace .noteBody { overflow: clip; }
+.portfolioSpace .noteBody { overflow-y: auto; }
 .portfolioSpace .noteTitle { opacity: 1; }
-.noteBar .readNote { font-size: 14px; }
-.readingDialog { width: min(600px, 100% - 24px); max-height: calc(100dvh - 24px); margin: auto; background: var(--note); color: var(--desktop-ink); border: 1px solid var(--line); box-shadow: 0 12px 30px #0004; }
-.readingDialog::backdrop { background: #0005; }
-.readingDialog form { display: flex; justify-content: flex-end; position: sticky; top: 0; padding-inline: 16px; background: var(--bar); }
-.readingDialog button { min-height: 44px; }
 @media (min-width: 1000px) {
   .workspace > .note {
     max-width: calc(100% - 12px);

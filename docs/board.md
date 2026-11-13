@@ -2,6 +2,8 @@
 
 Open the board at `/board`, `/#stickies`, or through the portfolio's desktop navigation. On a wide screen, drag a sticky by its title bar and resize it from the bottom-right corner. Double-click the title bar to collapse or expand it. The browser remembers the layout across refreshes. **Arrange all notes** reopens notes and restores their default layout.
 
+The board’s notes area scrolls with the wheel, trackpad, touch, or keyboard. The outer scrollbar is hidden. Tab to **Idea board notes** to scroll the area with the keyboard.
+
 In each sticky’s title bar, the heart toggles a reaction for this browser and the speech bubble opens the public discussion. Both controls remain available on collapsed notes. Posted comments appear above the composer. Leave the name blank to post as **Anonymous**. **Owner access** unlocks creating, editing, and deleting stickies and moderating comments until sign-out or page reload.
 
 Click outside an open board dialog or press Escape to dismiss it. `/board?idea=<id>` reopens a locally closed sticky and brings it into view.

@@ -80,7 +80,6 @@ function DesktopArrow({ back = false }: { back?: boolean }) {
 export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
   const [isBoard, setIsBoard] = useState(initialBoard);
   const [boardVisited, setBoardVisited] = useState(initialBoard);
-  const [reading, setReading] = useState<NoteId | null>(null);
   const [active, setActive] = useDesktopPreference<NoteId>("portfolio:active", "about");
   const [stack, setStack] = useDesktopPreference("portfolio:stack", defaultStack);
   const [closed, setClosed] = useDesktopPreference<NoteId[]>("portfolio:closed", []);
@@ -94,7 +93,6 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
   const menuRef = useRef<HTMLElement>(null);
   const notesRef = useRef<HTMLElement>(null);
   const boardRef = useRef<HTMLElement>(null);
-  const readingDialog = useRef<HTMLDialogElement>(null);
 
   function switchDesktop(event: MouseEvent<HTMLAnchorElement>, nextIsBoard: boolean, noteId?: NoteId) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -272,10 +270,7 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
         </DesktopFolder>
         <DesktopFolder name="Archive" slot={2} onOpen={() => setMenu(null)} />
         <div className={styles.workspace}>
-          {notes.filter((note) => !closed.includes(note.id)).map((note) => <StickyWindow key={`${note.id}-${arrangement}`} note={note} active={active === note.id} color={palette[note.id]} order={stack.indexOf(note.id) + 1} collapsed={collapsed.includes(note.id)} onActivate={() => activate(note.id)} onClose={() => closeNote(note.id)} onCollapse={() => toggleCollapsed(note.id)} titleBarActions={<button type="button" className={styles.readNote} aria-label={`Read ${note.title}`} aria-haspopup="dialog" title="Read full note" onClick={() => {
-            setReading(note.id);
-            readingDialog.current?.showModal();
-          }}>↗</button>}><NoteContent id={note.id} /></StickyWindow>)}
+          {notes.filter((note) => !closed.includes(note.id)).map((note) => <StickyWindow key={`${note.id}-${arrangement}`} note={note} active={active === note.id} color={palette[note.id]} order={stack.indexOf(note.id) + 1} collapsed={collapsed.includes(note.id)} onActivate={() => activate(note.id)} onClose={() => closeNote(note.id)} onCollapse={() => toggleCollapsed(note.id)}><NoteContent id={note.id} /></StickyWindow>)}
           {closed.length === notes.length && <div className={styles.empty}><p>All tucked away.</p><button onClick={reset}>Reopen my notes</button></div>}
         </div>
       </section>
@@ -284,9 +279,5 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
       </section>
     </main>
     {!isBoard && <footer className={styles.footer}><span>Kevin Pei’s desktop</span><button onClick={reset}>Arrange all notes</button></footer>}
-    <dialog ref={readingDialog} className={`${styles.readingDialog} ${reading ? styles[palette[reading]] : ""}`} aria-label={notes.find((note) => note.id === reading)?.title} onClose={() => setReading(null)}>
-      <form method="dialog"><button>Close</button></form>
-      {reading && <div className={styles.noteBody}><NoteContent id={reading} /></div>}
-    </dialog>
   </div>;
 }
