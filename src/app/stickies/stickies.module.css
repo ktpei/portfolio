@@ -146,4 +146,8 @@
   .footer > span { width: 100%; }
   .boardSurface { padding: 20px 19px 24px; }
 }
+@media (max-width: 360px) {
+  .portfolioSpace .edgeLink { margin-right: 6px; }
+  .portfolioSpace .edgeLink > span { padding-inline: 5px; }
+}
 @media (prefers-reduced-motion: reduce) { .space { transition: none; } }

@@ -4,9 +4,10 @@ import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, 
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { education, intro, links, projects, site, skills, work } from "@/content";
+import { education, highSchool, intro, links, projects, site, skills, work } from "@/content";
 import { StickyWindow, type StickyColor, type StickyPlacement } from "./sticky-window";
-import { Wallpapers } from "./wallpapers";
+import { DesktopFolder } from "./desktop-folder";
+import { WallpaperPicker } from "./wallpapers";
 import styles from "./stickies.module.css";
 
 const BulletinBoard = dynamic(() => import("../board/bulletin-board").then((module) => module.BulletinBoard));
@@ -19,7 +20,7 @@ const notes: Note[] = [
   { id: "work", title: "Where I’ve been working", color: "blue", x: 36, y: 91, width: 29, height: 417 },
   { id: "projects", title: "Things I’ve built", color: "pink", x: 69, y: 48, width: 28, height: 475 },
   { id: "contact", title: "Let’s keep in touch", color: "green", x: 5, y: 470, width: 27, height: 242 },
-  { id: "education", title: "A note on school", color: "purple", x: 37, y: 531, width: 28, height: 210 },
+  { id: "education", title: "A note on school", color: "purple", x: 37, y: 531, width: 28, height: 278 },
   { id: "toolkit", title: "My toolkit", color: "gray", x: 70, y: 577, width: 27, height: 240 },
 ];
 
@@ -64,7 +65,11 @@ function NoteContent({ id }: { id: NoteId }) {
     </section>)}
   </>;
   if (id === "contact") return <><h2>Let’s keep in touch</h2><p>{links.map((link) => <span className={styles.linkLine} key={link.label}><a href={link.href} target={link.href.startsWith("mailto") ? undefined : "_blank"} rel="noreferrer">{link.label === "Email" ? link.display : link.label}</a></span>)}</p>{site.status && <p className={styles.meta}>{site.status}</p>}</>;
-  if (id === "education") return <><h2>A note on school</h2><p><strong>{education.school}</strong><br />{education.degree}</p><p>{education.detail}<br />{education.period}</p></>;
+  if (id === "education") return <>
+    <h2>A note on school</h2>
+    <p><strong>{education.school}</strong><br />{education.degree}<br />{education.detail}<br />{education.period}</p>
+    <p><strong>{highSchool.school}</strong><br />{highSchool.detail}</p>
+  </>;
   return <><h2>My toolkit</h2>{skills.map((group) => <p key={group.group}><strong>{group.group}</strong><br />{group.items.join(", ")}</p>)}</>;
 }
 
@@ -245,9 +250,13 @@ export function Stickies({ initialBoard = false }: { initialBoard?: boolean }) {
       <div className={styles.menuRight}><span className={styles.owner}>{site.name}</span><time aria-label={`New York time: ${clock}`}>{clock}</time></div>
     </header>
     <p className={styles.wipBanner}><strong>WIP</strong><span>This portfolio is a work in progress.</span></p>
-    <main className={styles.spaces} data-board-desktop={isBoard || undefined}>
-      <Wallpapers current={wallpaper} onSelect={setWallpaper} onOpen={() => setMenu(null)} />
+    <main className={styles.spaces}>
       <section ref={notesRef} id="notes" tabIndex={-1} inert={isBoard} className={`${styles.space} ${styles.portfolioSpace}`} aria-label="Kevin Pei’s notes">
+        <DesktopFolder name="Wallpapers" slot={0} onOpen={() => setMenu(null)}>
+          <WallpaperPicker current={wallpaper} onSelect={setWallpaper} />
+        </DesktopFolder>
+        <DesktopFolder name="Files" slot={1} onOpen={() => setMenu(null)} />
+        <DesktopFolder name="Archive" slot={2} onOpen={() => setMenu(null)} />
         <Link href="/#stickies" className={styles.edgeLink} onClick={(event) => switchDesktop(event, true)}>
           <span>Idea Board <DesktopArrow /></span>
         </Link>

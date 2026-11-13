@@ -134,6 +134,11 @@ export const education = {
   period: "Expected May 2028",
 };
 
+export const highSchool = {
+  school: "Shanghai High School International Division",
+  detail: "9 APs · 1570 SAT",
+};
+
 export const skills: { group: string; items: string[] }[] = [
   { group: "Languages", items: ["Python", "TypeScript", "JavaScript", "SQL"] },
   { group: "Frameworks", items: ["React", "React Native", "Next.js", "Node.js", "FastAPI"] },

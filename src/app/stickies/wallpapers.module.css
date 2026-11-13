@@ -1,20 +1,24 @@
 .folder {
   position: absolute;
-  top: 0;
-  left: var(--wallpapers-left, clamp(12px, 3vw, 44px));
+  top: min(var(--folder-y, 0px), calc(100% - 48px));
+  left: min(var(--folder-x, calc(clamp(4px, 2vw, 32px) + 66px * var(--slot))), calc(100% - 66px));
+  width: 66px;
+  height: 48px;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2px 6px;
   border-radius: 6px;
+  touch-action: none;
+  user-select: none;
   white-space: nowrap;
 }
 
-.folder span { padding: 2px 5px; border-radius: 4px; background: #f3f6f8; color: #293e4e; font-size: 12px; font-weight: 650; line-height: 1.2; }
+.folder span { padding: 1px 3px; border-radius: 4px; background: #f3f6f8; color: #293e4e; font-size: 11px; font-weight: 650; line-height: 1.2; }
 .folder:focus span { background: #0a63c9; color: #fff; }
-.folder:focus svg { background: #1c30422e; border-radius: 5px; }
-.folder svg { flex: none; height: 28px; filter: drop-shadow(0 1px 1px #20334b4d); }
+.folder:focus img { background: #1c30422e; border-radius: 5px; }
+.folder img { flex: none; pointer-events: none; }
+.emptyFolder { display: grid; min-height: 140px; place-items: center; color: #4b5964; font-size: 13px; }
 
 .dialog {
   position: fixed;
@@ -82,10 +86,6 @@
 .dialog .thumbnail:focus-visible { outline-offset: 0; z-index: 1; }
 .thumbnail[aria-pressed="true"] { box-shadow: 0 0 0 2px #1859a5; }
 .selected { position: absolute; top: 5px; right: 5px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #1859a5; color: #fff; }
-
-@media (max-width: 999px) {
-  [data-board-desktop] .folder { --wallpapers-left: 130px; }
-}
 
 @media (max-width: 520px) {
   .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
