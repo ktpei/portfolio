@@ -1,5 +1,6 @@
 .desktop {
   --desktop-ink: #202124;
+  --desktop-label-shadow: 0 1px 2px #000, 0 0 3px #000;
   background: radial-gradient(ellipse at 45% 35%, #c8d2d9 0%, #b1bec8 70%, #a6b4bf 100%);
   min-height: 100dvh;
   color: var(--desktop-ink);
@@ -13,7 +14,9 @@
 .desktop :is(button, a, summary):focus-visible { outline: 2px solid #1859a5; outline-offset: 3px; }
 .desktop ::selection { background: #82b5e8; color: #111; }
 .wallpaperBackdrop { position: fixed; inset: 0; z-index: -1; background-position: center; background-size: cover; }
-.customWallpaper :is(.edgeLink > span, .footer > span, .footer > button, .empty) { background: #f3f6f8; border-radius: 6px; }
+.customWallpaper :is(.footer > span, .footer > button, .empty) { background: #f3f6f8; border-radius: 6px; }
+.customWallpaper .edgeLink { color: #fff; text-shadow: var(--desktop-label-shadow); }
+.customWallpaper .edgeLink svg { filter: drop-shadow(0 1px 2px #000); }
 .customWallpaper .footer > :is(span, button) { width: auto; padding: 5px 8px; }
 .menuBar { height: 30px; position: sticky; top: 0; z-index: 50; display: flex; align-items: stretch; padding: 0 17px; background: #e8eceee0; border-bottom: 1px solid #77828a55; box-shadow: 0 1px 3px #0000000a; backdrop-filter: blur(20px); font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; font-size: 13px; }
 .brand { display: flex; align-items: center; padding: 0 15px 2px 4px; font-weight: 750; letter-spacing: -1px; font-size: 19px; }
