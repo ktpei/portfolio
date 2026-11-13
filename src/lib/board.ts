@@ -10,7 +10,7 @@ export const statusLabels: Record<NoteStatus, string> = { idea: "Idea", explorin
 export const seedNoteDate = "2026-09-25T05:15:00.000Z";
 export const seedNotes: BoardNote[] = [
   { id: "guided-visor", title: "Buffed up [visor](https://github.com/ktpei/visor) but for guidance/onboard", body: "This was basically a shittier [Clicky](https://www.heyclicky.com/) before Clicky was a thing, which was our exact vision.\n[Visor demo](https://www.youtube.com/watch?v=uYmiHdQ1VMU)", color: "yellow", status: "idea" },
-  { id: "notes-to-text", title: "Music transcription", body: "", color: "blue", status: "idea" },
+  { id: "notes-to-text", title: "AI music transcription", body: "", color: "blue", status: "idea" },
   { id: "digital-poker", title: "Digital poker chips", body: "Forgot the chips? Use your phones to track everyone’s stacks, bets, and the pot while you play with a real deck.", color: "pink", status: "idea" },
   { id: "learn-asl", title: "Duolingo but for ASL", body: "", color: "green", status: "idea" },
   { id: "pair-prompting", title: "Pair prompting", body: "Multiplayer AI ([Conductor](https://www.conductor.build/)).", color: "lavender", status: "idea" },
