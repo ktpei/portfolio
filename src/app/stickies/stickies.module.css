@@ -42,15 +42,16 @@
 .colorSwatch { width: 14px; height: 14px; display: block; background: var(--note); border: 1px solid #0002; }
 .wipBanner { display: flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 10px; padding: 9px 16px; margin: 0; background: #fff6a0; color: #493d16; font-size: 13px; line-height: 1.4; }
 .wipBanner strong { flex-shrink: 0; white-space: nowrap; font-size: 11px; letter-spacing: .08em; border: 1px solid currentColor; border-radius: 3px; padding: 1px 5px; }
-.spaces { position: relative; flex: 1; min-height: 0; overflow: hidden auto; overscroll-behavior-y: contain; }
-.space { position: relative; min-width: 0; min-height: 100%; transition: translate 400ms cubic-bezier(.28, .72, .22, 1); }
+.spaces { position: relative; flex: 1; min-height: 0; overflow: clip; }
+.space { position: absolute; inset: 0; min-width: 0; translate: var(--desktop-swipe) 0; transition: translate 400ms cubic-bezier(.28, .72, .22, 1); }
+.spaces[data-swiping] .space { transition: none; }
 .space:focus { outline: none; }
-.space[inert] { position: absolute; inset: 0 0 auto; max-height: 100%; overflow: clip; pointer-events: none; }
-.portfolioSpace[inert] { translate: -100% 0; }
-.boardSpace[inert] { translate: 100% 0; }
+.space[inert] { pointer-events: none; }
+.portfolioSpace[inert] { translate: calc(-100% + var(--desktop-swipe)) 0; }
+.boardSpace[inert] { translate: calc(100% + var(--desktop-swipe)) 0; }
 .edgeLink { display: flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 12px; color: #293e4e; font-size: 13px; font-weight: 650; line-height: 1.2; }
 .edgeLink svg { flex: none; }
-.workspace { position: relative; max-width: 1440px; margin: 0 auto; min-height: 850px; }
+.workspace { position: relative; max-width: 1440px; margin: 0 auto; }
 .yellow { --note: #fff6a0; --bar: #eee387; --line: #b8a74e; }
 .blue { --note: #b9e5fb; --bar: #a4d3ed; --line: #77a3b8; }
 .pink { --note: #ffc9cb; --bar: #eeb4b8; --line: #ba878c; }
@@ -105,15 +106,27 @@
 .empty button { text-decoration: underline; }
 .skip { position: fixed; z-index: 100; top: -70px; left: 20px; padding: 10px 20px; background: #fff6a0; color: #111; }
 .skip:focus { top: 36px; }
-.boardSurface { max-width: 1400px; margin: auto; padding: 32px; }
-.portfolioSpace { display: flex; flex-direction: column; padding-left: 96px; }
-.portfolioSpace > .workspace { flex: 1 0 auto; width: 100%; }
+.boardSurface { height: 100%; max-width: 1400px; margin: auto; padding: 24px 32px 12px; }
+.portfolioSpace { padding-left: 96px; touch-action: pinch-zoom; }
+.portfolioSpace > .workspace { height: 100%; width: 100%; }
+.portfolioSpace .noteBody { overflow: clip; }
+.portfolioSpace .noteTitle { opacity: 1; }
+.noteBar .readNote { font-size: 14px; }
+.readingDialog { width: min(600px, 100% - 24px); max-height: calc(100dvh - 24px); margin: auto; background: var(--note); color: var(--desktop-ink); border: 1px solid var(--line); box-shadow: 0 12px 30px #0004; }
+.readingDialog::backdrop { background: #0005; }
+.readingDialog form { display: flex; justify-content: flex-end; position: sticky; top: 0; padding-inline: 16px; background: var(--bar); }
+.readingDialog button { min-height: 44px; }
 @media (min-width: 1000px) {
   .workspace > .note {
     max-width: calc(100% - 12px);
     left: clamp(0px, calc(var(--left) + var(--offset-x)), calc(100% - min(var(--width), 100% - 12px)));
     top: clamp(0px, calc(var(--top) + var(--offset-y)), calc(100% - 28px));
     transform: none;
+  }
+  .portfolioSpace .note {
+    --note-top: clamp(0px, calc(var(--top) + var(--offset-y)), calc(100% - 28px));
+    top: var(--note-top);
+    max-height: calc(100% - var(--note-top));
   }
 }
 @media (min-width: 1000px) {
@@ -125,11 +138,12 @@
   .workspace { margin-right: 0; }
   .boardSurface { padding-left: 18px; }
 }
-@media (min-width: 1500px) { .workspace { min-height: 900px; } }
 @media (max-width: 999px) {
   .edgeLink { align-self: flex-end; margin-inline: 24px; }
   .backLink { align-self: flex-start; }
   .workspace { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; align-items: start; padding: 18px 24px 35px; min-height: 0; }
+  .portfolioSpace > .workspace { grid-auto-rows: minmax(0, 1fr); align-items: stretch; gap: 8px; padding-block: 8px; }
+  .portfolioSpace .note { min-height: 0; }
   .note { position: relative; left: auto; top: auto; width: 100%; height: auto; max-height: 520px; transform: none; }
   .noteBar { touch-action: auto; cursor: default; }
   .noteTitle { opacity: .65; }
@@ -147,7 +161,9 @@
   .dropdown { position: fixed; top: 36px; left: 12px; right: 12px; min-width: 0; }
   .edgeLink { margin-inline: 19px; }
   .workspace { grid-template-columns: 1fr; padding: 18px 19px 25px; gap: 24px; }
-  .portfolioSpace .workspace { padding-inline: 0 12px; }
+  .portfolioSpace .workspace { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-inline: 0 12px; }
+  .portfolioSpace .noteBar button { width: 24px; }
+  .portfolioSpace .noteTitle { padding-inline: 2px; }
   .note { max-height: none; }
   .noteBody { max-height: none; overflow: visible; padding: 18px; }
   .noteBar { height: 30px; min-height: 30px; }
@@ -156,4 +172,7 @@
   .footer { padding-inline: 19px; }
   .boardSurface { padding: 20px 19px 24px; }
 }
-@media (prefers-reduced-motion: reduce) { .space { transition: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .spaces { --desktop-swipe: 0px !important; }
+  .space { transition: none; }
+}

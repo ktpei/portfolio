@@ -36,7 +36,7 @@ export function StickyWindow({ note, color, active, order, collapsed, onActivate
     }
   }
 
-  return <article ref={ref} id={note.id} tabIndex={-1} aria-label={`${note.title} note`} onPointerDown={onActivate} onFocusCapture={onActivate} className={`${styles.note} ${styles[color]} ${active ? styles.active : ""} ${collapsed ? styles.collapsed : ""}`} style={{ "--left": `${note.x}%`, "--top": `${note.y}px`, "--width": `${note.width}%`, "--height": `${note.height}px`, "--offset-x": `${offset.x}px`, "--offset-y": `${offset.y}px`, ...(size ? { "--width": `${size.width}px`, "--height": `${size.height}px` } : {}), zIndex: order } as CSSProperties}>
+  return <article ref={ref} id={note.id} tabIndex={-1} aria-label={`${note.title} note`} onPointerDown={onActivate} onFocusCapture={onActivate} className={`${styles.note} ${styles[color]} ${active ? styles.active : ""} ${collapsed ? styles.collapsed : ""}`} style={{ "--left": `${note.x}%`, "--top": space === "portfolio" ? `${note.y / 8.5}%` : `${note.y}px`, "--width": `${note.width}%`, "--height": space === "portfolio" ? `${note.height / 8.5}%` : `${note.height}px`, "--offset-x": `${offset.x}px`, "--offset-y": `${offset.y}px`, ...(size ? { "--width": `${size.width}px`, "--height": `${size.height}px` } : {}), zIndex: order } as CSSProperties}>
     <header className={styles.noteBar} tabIndex={0} aria-label={`${note.title} title bar. Arrow keys move the note; Shift and arrow keys resize it.`} onKeyDown={(event) => {
       if (event.target !== event.currentTarget || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key) || !matchMedia("(min-width: 1000px)").matches || !ref.current) return;
       const viewport = ref.current.closest(`.${styles.spaces}`)?.getBoundingClientRect();
@@ -54,6 +54,6 @@ export function StickyWindow({ note, color, active, order, collapsed, onActivate
       {titleBarActions}
       <button type="button" className={styles.collapseControl} aria-label={`${collapsed ? "Expand" : "Collapse"} ${note.title}`} title={collapsed ? "Expand note" : "Collapse note"} onClick={onCollapse} aria-expanded={!collapsed}><span /></button>
     </header>
-    {!collapsed && <><div className={bodyClassName ? `${styles.noteBody} ${bodyClassName}` : styles.noteBody} tabIndex={0} role="region" aria-label={`${note.title} content`}>{children}</div><span className={styles.resizeGrip} aria-hidden="true" onPointerDown={(event) => start(event, "resize")} onPointerMove={move} onPointerUp={() => { gesture.current = null; }} onPointerCancel={() => { gesture.current = null; }} /></>}
+    {!collapsed && <><div className={bodyClassName ? `${styles.noteBody} ${bodyClassName}` : styles.noteBody} inert={space === "portfolio"} tabIndex={space === "board" ? 0 : undefined} role="region" aria-label={`${note.title} content`}>{children}</div><span className={styles.resizeGrip} aria-hidden="true" onPointerDown={(event) => start(event, "resize")} onPointerMove={move} onPointerUp={() => { gesture.current = null; }} onPointerCancel={() => { gesture.current = null; }} /></>}
   </article>;
 }

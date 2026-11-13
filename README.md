@@ -23,7 +23,7 @@ The tests cover the local board store, including concurrent writes, reactions, a
 
 - Portfolio copy, links, work history, projects, education, and skills live in [`src/content.ts`](src/content.ts).
 - The shared desktop and note-window behavior live in [`src/app/stickies`](src/app/stickies). Native macOS is the 1:1 design reference for icons, UI, and behavior. The notes switch to columns or a stack on smaller screens.
-- Notes scroll within the desktop. The menu, WIP banner, and desktop switch stay in view, and the portfolio footer stays at the bottom with transparent labels. The idea board toolbar stays visible while browsing ideas.
+- Scroll down or swipe to slide from the fixed portfolio desktop to the idea board. On the board, the stickies area scrolls when it overflows. Scroll up from the top to return, or use the Portfolio shortcut. Open a portfolio sticky’s full text with its title-bar read button. The menu, WIP banner, and desktop switch stay in view, and the portfolio footer stays at the bottom.
 - The portfolio desktop has three draggable folders. **Wallpapers** lets visitors pick, shuffle, or reset the background. **Files** and **Archive** are empty for future use. See the [folder and wallpaper guide](docs/wallpapers.md).
 - The idea board UI lives in [`src/app/board`](src/app/board). Server-side board logic lives in [`src/lib/board-store.ts`](src/lib/board-store.ts) and [`convex`](convex).
 
