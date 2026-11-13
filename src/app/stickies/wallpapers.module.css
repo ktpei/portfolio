@@ -12,9 +12,9 @@
 }
 
 .folder span { padding: 2px 5px; border-radius: 4px; background: #f3f6f8; color: #293e4e; font-size: 12px; font-weight: 650; line-height: 1.2; }
-.folder:hover { background: #f3f6f870; }
-.folder:active { background: #f3f6f8a0; }
-.folder svg { flex: none; height: 28px; }
+.folder:focus span { background: #0a63c9; color: #fff; }
+.folder:focus svg { background: #1c30422e; border-radius: 5px; }
+.folder svg { flex: none; height: 28px; filter: drop-shadow(0 1px 1px #20334b4d); }
 
 .dialog {
   position: fixed;
@@ -34,18 +34,21 @@
 .dialog::backdrop { background: #17253044; }
 
 .titlebar {
+  position: relative;
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  justify-content: space-between;
-  padding-left: 16px;
-  background: #e8ecee;
+  justify-content: center;
+  min-height: 44px;
+  background: linear-gradient(#f5f6f7, #e6e8eb);
   border-bottom: 1px solid #c6ced4;
 }
 
 .titlebar h2 { font-size: 14px; font-weight: 700; }
-.close { width: 44px; height: 44px; font-size: 22px !important; }
-.close:hover { background: #dbe2e7; }
+.titlebar form { position: absolute; inset: 0 auto 0 0; }
+.close { width: 44px; height: 44px; display: grid; place-items: center; }
+.close span { display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; border: 1px solid #e14942; background: #ff6057; color: transparent; font-size: 12px; line-height: 1; }
+.close:is(:hover, :focus-visible) span { color: #671b17; }
 .dialog button:focus-visible { outline-offset: -3px; }
 
 .toolbar {

@@ -2,7 +2,7 @@
 
 Native macOS is the 1:1 reference for the desktop's icons, interface, and interaction behavior. The Wallpapers launcher follows the desktop-folder model and belongs on the desktop surface.
 
-The portfolio uses a Mac Stickies-style desktop. Its **Wallpapers** folder floats in the upper-left, independent of the notes and idea board layout. Open it to browse thumbnails, choose an image, shuffle on demand, or restore the default background. Shuffle skips the current image. The selection lasts while the desktop is open and resets on reload.
+The portfolio uses a Mac Stickies-style desktop. Its **Wallpapers** folder floats in the upper-left, independent of the notes and idea board layout. Click once to select the folder and double-click to open it. On touch devices, tap once. When the folder has keyboard focus, Enter, Space, Command-O, and Command-Down Arrow open it. Browse thumbnails, choose an image, shuffle on demand, or restore the default background. Shuffle skips the current image. The selection lasts while the desktop is open and resets on reload.
 
 ## Collection
 

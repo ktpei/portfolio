@@ -6,7 +6,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${site.url}/board`, changeFrequency: "daily", priority: 0.8 },
     {
       url: site.url,
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 1,
     },

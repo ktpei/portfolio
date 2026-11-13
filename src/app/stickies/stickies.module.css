@@ -4,18 +4,17 @@
   min-height: 100dvh;
   color: var(--desktop-ink);
   color-scheme: light;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   position: relative;
   isolation: isolate;
 }
-.desktop button { cursor: pointer; font: inherit; }
+.desktop button { cursor: pointer; font-family: inherit; }
+.desktop button:disabled { cursor: default; }
 .desktop :is(button, a, summary):focus-visible { outline: 2px solid #1859a5; outline-offset: 3px; }
 .desktop ::selection { background: #82b5e8; color: #111; }
-.wallpaperDesktop { position: relative; }
-.wallpaperDesktop[data-board-desktop] { --wallpapers-left: 160px; }
 .wallpaperBackdrop { position: fixed; inset: 0; z-index: -1; background-position: center; background-size: cover; }
-.customWallpaper :is(.back, .footer > *, .empty) { background: #f3f6f8; border-radius: 6px; }
-.customWallpaper .footer > * { width: auto; padding: 5px 8px; }
+.customWallpaper :is(.edgeLink > span, .footer > span, .footer > button, .empty) { background: #f3f6f8; border-radius: 6px; }
+.customWallpaper .footer > :is(span, button) { width: auto; padding: 5px 8px; }
 .menuBar { height: 30px; position: sticky; top: 0; z-index: 50; display: flex; align-items: stretch; padding: 0 17px; background: #e8eceee0; border-bottom: 1px solid #77828a55; box-shadow: 0 1px 3px #0000000a; backdrop-filter: blur(20px); font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; font-size: 13px; }
 .brand { display: flex; align-items: center; padding: 0 15px 2px 4px; font-weight: 750; letter-spacing: -1px; font-size: 19px; }
 .menuGroup { position: relative; }
@@ -31,13 +30,24 @@
 .dropdown > button:disabled { opacity: .4; cursor: default; background: transparent; color: inherit; }
 .dropdown hr { height: 1px; border: 0; background: #0002; margin: 5px 6px; }
 .menuHeading { display: block; padding: 7px 10px 4px; font-size: 13px; }
-.menuDescription { padding: 4px 10px 8px; line-height: 1.7; font-size: 12px; white-space: nowrap; color: #555; }
+.menuDescription { max-width: 28rem; padding: 4px 10px 8px; line-height: 1.7; font-size: 12px; color: #555; }
 .menuCheck { margin-left: auto; }
 .windowCheck { width: 10px; flex-shrink: 0; }
 .hiddenLabel { font-size: 11px; opacity: .6; margin-left: auto; }
 .colorSwatch { width: 14px; height: 14px; display: block; background: var(--note); border: 1px solid #0002; }
 .wipBanner { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 9px 16px; margin: 0; background: #fff6a0; color: #493d16; font-size: 13px; line-height: 1.4; }
 .wipBanner strong { flex-shrink: 0; white-space: nowrap; font-size: 11px; letter-spacing: .08em; border: 1px solid currentColor; border-radius: 3px; padding: 1px 5px; }
+.spaces { position: relative; overflow: clip; }
+.space { position: relative; min-width: 0; min-height: calc(100dvh - 66px); transition: translate 400ms cubic-bezier(.28, .72, .22, 1); }
+.space:focus { outline: none; }
+.space[inert] { position: absolute; inset: 0 0 auto; pointer-events: none; }
+.portfolioSpace[inert] { translate: -100% 0; }
+.boardSpace[inert] { translate: 100% 0; }
+.edgeLink { display: flex; justify-content: flex-end; color: #293e4e; }
+.edgeLink > span { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 12px; font-size: 13px; font-weight: 650; line-height: 1.2; }
+.desktop .edgeLink:focus-visible { outline: none; }
+.desktop .edgeLink:focus-visible > span { outline: 2px solid #1859a5; outline-offset: 2px; }
+.boardSpace .edgeLink { justify-content: flex-start; }
 .workspace { position: relative; max-width: 1440px; margin: 0 auto; min-height: max(850px, calc(100dvh - 66px)); }
 .yellow { --note: #fff6a0; --bar: #eee387; --line: #b8a74e; }
 .blue { --note: #b9e5fb; --bar: #a4d3ed; --line: #77a3b8; }
@@ -49,6 +59,7 @@
 .active { box-shadow: 0 13px 28px #1c293337, 0 2px 5px #0002; }
 .noteBar { height: 21px; min-height: 21px; position: relative; display: flex; align-items: center; justify-content: space-between; background: var(--bar); border-bottom: 1px solid color-mix(in srgb, var(--line) 65%, transparent); cursor: grab; touch-action: none; user-select: none; }
 .noteBar:active { cursor: grabbing; }
+.noteBar:focus-visible { outline: 2px solid #1859a5; outline-offset: -2px; }
 .noteTitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 19px; opacity: 0; flex: 1; text-align: center; padding: 0 8px; }
 .noteBar button { width: 25px; height: 21px; display: grid; place-items: center; flex-shrink: 0; cursor: default; }
 .noteBar button span { display: block; width: 10px; height: 10px; border: 1px solid color-mix(in srgb, var(--line) 80%, #3b3b3b); opacity: .55; }
@@ -65,14 +76,19 @@
 .noteBody a { color: #173f94; text-decoration: underline; text-underline-offset: 2px; overflow-wrap: anywhere; }
 .noteBody a:hover { color: #081e53; }
 .noteBody strong { font-weight: 700; }
-.noteBody ul { padding: 0 0 0 19px; list-style: disc; margin: 12px 0 15px; }
-.noteBody li { margin-bottom: 9px; }
-.noteBody details { margin-top: 9px; }
-.noteBody summary { font-size: 14px; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.profile { display: grid; grid-template-columns: minmax(0, 1fr) min(43%, 132px); gap: 12px; align-items: start; margin-bottom: 14px; }
+.portrait { display: block; width: 100%; height: auto; border-radius: 3px; }
 .meta { font-size: 13px; line-height: 1.5; color: #3d4147; }
 .entry { margin-bottom: 25px; }
 .entry:last-child { margin-bottom: 0; }
 .entry > p { margin-bottom: 10px; }
+.workEntry + .workEntry { margin-top: 13px; }
+.workEntry > p { font-size: 15px; }
+.workEntry > p:has(+ .details) { margin-bottom: 5px; }
+.details { color: #334354; font-size: 13px; }
+.details summary { cursor: pointer; width: fit-content; }
+.details ul { list-style: disc; padding-inline-start: 18px; margin-block: 6px; }
+.details li + li { margin-top: 5px; }
 .linkLine { display: block; margin-bottom: 5px; }
 .resizeGrip { position: absolute; right: 1px; bottom: 1px; width: 13px; height: 13px; background: repeating-linear-gradient(135deg, transparent 0 3px, #0004 3px 4px); clip-path: polygon(100% 0, 100% 100%, 0 100%); cursor: nwse-resize; touch-action: none; }
 .collapsed { height: 23px !important; }
@@ -86,11 +102,23 @@
 .empty button { text-decoration: underline; }
 .skip { position: fixed; z-index: 100; top: -70px; left: 20px; padding: 10px 20px; background: #fff6a0; color: #111; }
 .skip:focus { top: 36px; }
-.boardSurface { max-width: 1400px; margin: auto; padding: 35px 32px; }
-.back { display: inline-block; font-size: 14px; margin-bottom: 20px; text-decoration: underline; }
+.boardSurface { max-width: 1400px; margin: auto; padding: 32px; }
+@media (min-width: 1000px) {
+  .space { --desktop-edge: max(78px, calc((100% - 1440px) / 2)); }
+  .portfolioSpace { padding-right: var(--desktop-edge); }
+  .boardSpace { padding-left: var(--desktop-edge); }
+  .edgeLink { position: absolute; top: 0; bottom: 0; right: 0; width: var(--desktop-edge); display: block; text-align: center; }
+  .edgeLink > span { position: sticky; top: max(48px, 43dvh); flex-direction: column; width: 62px; min-height: 70px; margin: max(48px, calc(43dvh - 66px)) auto 16px; padding: 7px; }
+  .boardSpace .edgeLink { left: 0; right: auto; }
+  .boardSpace .edgeLink > span { flex-direction: column-reverse; }
+  .workspace { margin-right: 0; }
+  .boardSurface { padding-left: 18px; }
+}
 @media (min-width: 1500px) { .workspace { min-height: max(900px, calc(100dvh - 66px)); } }
 @media (max-width: 999px) {
-  .workspace { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; align-items: start; padding: 35px 24px; min-height: calc(100dvh - 75px); }
+  .edgeLink { width: fit-content; margin: 13px 24px 0 auto; }
+  .boardSpace .edgeLink { margin: 13px auto 0 24px; }
+  .workspace { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; align-items: start; padding: 18px 24px 35px; min-height: calc(100dvh - 130px); }
   .note { position: relative; left: auto; top: auto; width: 100%; height: auto; max-height: 520px; transform: none; }
   .noteBar { touch-action: auto; cursor: default; }
   .noteTitle { opacity: .65; }
@@ -98,15 +126,17 @@
   .resizeGrip { display: none; }
   .owner { display: none; }
   .footer { padding: 0 24px 20px; }
+  .boardSurface { padding: 20px 24px 30px; }
 }
 @media (max-width: 600px) {
   .menuBar { padding: 0 7px; height: 36px; font-size: 12px; }
   .brand { padding-right: 10px; font-size: 17px; }
   .menuButton { padding: 0 9px; }
   .menuRight { display: none; }
-  .dropdown { top: 36px; }
-  .menuGroup:last-of-type .dropdown { left: auto; right: 0; }
-  .workspace { grid-template-columns: 1fr; padding: 25px 19px; gap: 24px; }
+  .dropdown { position: fixed; top: 36px; left: 12px; right: 12px; min-width: 0; }
+  .edgeLink { margin-right: 19px; }
+  .boardSpace .edgeLink { margin-left: 19px; }
+  .workspace { grid-template-columns: 1fr; padding: 18px 19px 25px; gap: 24px; }
   .note { max-height: none; }
   .noteBody { max-height: none; overflow: visible; padding: 18px; }
   .noteBar { height: 30px; min-height: 30px; }
@@ -114,5 +144,6 @@
   .collapsed { height: 32px !important; }
   .footer { font-size: 12px; gap: 15px; flex-wrap: wrap; padding: 0 19px 20px; }
   .footer > span { width: 100%; }
-  .boardSurface { padding: 24px 19px; }
+  .boardSurface { padding: 20px 19px 24px; }
 }
+@media (prefers-reduced-motion: reduce) { .space { transition: none; } }

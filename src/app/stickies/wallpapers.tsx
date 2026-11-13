@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import Image from "next/image";
 import styles from "./wallpapers.module.css";
 
@@ -21,7 +21,13 @@ export function Wallpapers({ current, onSelect, onOpen }: {
   onOpen: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   const currentWallpaper = wallpapers.find((wallpaper) => wallpaper.src === current);
+
+  function openFolder() {
+    onOpen();
+    dialogRef.current?.showModal();
+  }
 
   function shuffle() {
     const choices = wallpapers.filter((wallpaper) => wallpaper.src !== current);
@@ -29,20 +35,32 @@ export function Wallpapers({ current, onSelect, onOpen }: {
   }
 
   return <>
-    <button className={styles.folder} type="button" aria-haspopup="dialog" onClick={() => {
-      onOpen();
-      dialogRef.current?.showModal();
+    <button className={styles.folder} type="button" aria-haspopup="dialog" onClick={(event) => {
+      event.currentTarget.focus({ preventScroll: true });
+      if (event.detail === 0 || matchMedia("(any-pointer: coarse)").matches) openFolder();
+    }} onDoubleClick={openFolder} onKeyDown={(event) => {
+      if (event.metaKey && (event.key.toLowerCase() === "o" || event.key === "ArrowDown")) {
+        event.preventDefault();
+        openFolder();
+      }
     }}>
-      <svg aria-hidden="true" width="42" height="36" viewBox="0 0 42 36" fill="none">
-        <path d="M2 8a4 4 0 0 1 4-4h10l4 4h16a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8Z" fill="#71badf" stroke="#376d8c" />
-        <rect x="2" y="12" width="38" height="20" rx="4" fill="#add9ef" stroke="#376d8c" />
+      <svg aria-hidden="true" width="44" height="36" viewBox="0 0 44 36" fill="none">
+        <defs>
+          <linearGradient id={`${titleId}-folder`} x2="0" y2="1" gradientUnits="objectBoundingBox">
+            <stop offset="0" stopColor="#8fe0fc" />
+            <stop offset="1" stopColor="#37a8e7" />
+          </linearGradient>
+        </defs>
+        <path d="M2 8a4 4 0 0 1 4-4h9a5 5 0 0 1 4 2l2 2h16a5 5 0 0 1 5 5v15a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8Z" fill="#298dc9" />
+        <rect x="3" y="11" width="38" height="21" rx="4" fill={`url(#${titleId}-folder)`} />
+        <path d="M7 12h30" stroke="#d5f3ff" strokeOpacity=".8" strokeLinecap="round" />
       </svg>
       <span>Wallpapers</span>
     </button>
-    <dialog ref={dialogRef} className={styles.dialog} aria-labelledby="wallpapers-title">
+    <dialog ref={dialogRef} className={styles.dialog} aria-labelledby={titleId}>
       <header className={styles.titlebar}>
-        <h2 id="wallpapers-title">Wallpapers</h2>
-        <form method="dialog"><button className={styles.close} aria-label="Close wallpapers">×</button></form>
+        <form method="dialog"><button className={styles.close} aria-label="Close wallpapers"><span aria-hidden="true">×</span></button></form>
+        <h2 id={titleId}>Wallpapers</h2>
       </header>
       <div className={styles.toolbar}>
         <p role="status">Current wallpaper <strong>{currentWallpaper?.label ?? "Default"}</strong></p>

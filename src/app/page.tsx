@@ -8,12 +8,12 @@ export default function Home() {
     name: site.name,
     url: site.url,
     jobTitle: site.role,
-    email: "kevinxpei@gmail.com",
+    email: links.find(({ href }) => href.startsWith("mailto:"))?.display,
     address: { "@type": "PostalAddress", addressLocality: "New York", addressRegion: "NY" },
     alumniOf: { "@type": "CollegeOrUniversity", name: education.school },
-    worksFor: { "@type": "Organization", name: work[0].org },
+    worksFor: work.filter((entry) => entry.current).map(({ org }) => ({ "@type": "Organization", name: org })),
     knowsAbout: skills.flatMap((group) => group.items),
     sameAs: links.filter((link) => link.href.startsWith("http")).map((link) => link.href),
   };
-  return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} /><Stickies /></>;
+  return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }} /><Stickies /></>;
 }
