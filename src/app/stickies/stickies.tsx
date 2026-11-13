@@ -57,11 +57,6 @@ function NoteContent({ id }: { id: NoteId }) {
       <h3>{project.href ? <a href={project.href} target="_blank" rel="noreferrer">{project.name} ↗</a> : project.name}</h3>
       {project.award && <p className={styles.meta}>{project.award}</p>}
       <p>{project.blurb}</p>
-      <details className={styles.details}>
-        <summary>{project.name} details</summary>
-        <ul>{project.points.map((point) => <li key={point}>{point}</li>)}</ul>
-        <p className={styles.meta}>{project.stack.join(" · ")}</p>
-      </details>
     </section>)}
   </>;
   if (id === "contact") return <><h2>Let’s keep in touch</h2><p>{links.map((link) => <span className={styles.linkLine} key={link.label}><a href={link.href} target={link.href.startsWith("mailto") ? undefined : "_blank"} rel="noreferrer">{link.label === "Email" ? link.display : link.label}</a></span>)}</p>{site.status && <p className={styles.meta}>{site.status}</p>}</>;
