@@ -34,3 +34,5 @@ See [project.md](project.md) for the architecture and verification checklist, [c
 ## Deployment
 
 The site domain is `kevinpei.dev`. Update `site.url` in `src/content.ts` if it changes. Next.js uses it for canonical URLs, robots, the sitemap, and the share image. Configure the [production board environment](docs/board.md#production) before deploying the site to Vercel.
+
+Vercel Web Analytics is enabled for the `portfolio` project. The root layout includes `@vercel/analytics/next` for page views across all routes. Deploy this integration to start collecting visits, then view traffic in the project's Analytics dashboard. No analytics environment variables are required. See [Vercel's setup guide](https://vercel.com/docs/analytics/quickstart).

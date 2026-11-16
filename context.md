@@ -2,6 +2,8 @@
 
 ## Product direction
 
+On November 16, Kevin requested Vercel analytics. Web Analytics was enabled on the linked `portfolio` Vercel project, and the root layout now includes the analytics component. Production collection still needs the integration deployed and a live visit verified.
+
 The portfolio started as a conventional content-driven page. In September 2026, Kevin explored a more interactive desktop and a 3D apartment concept, then chose a single low-key Stickies theme. He wanted a portfolio with its own personality and a quick path to the work, projects, and contact notes. The two desktops became the portfolio notes on the left and the public Ideas Board on the right. The edge arrows are unboxed and the board also has a direct route.
 
 The September WIP release was pushed to `main` at `59ed879` for Vercel. Kevin asked to remove the résumé for that release. On November 13 he supplied a replacement and explicitly asked for it to go in **Files**. The intro and résumé changes landed on the local portfolio branch in `d9a209c` and `2a0f9d9`.
