@@ -2,7 +2,7 @@
 
 ## Product direction
 
-On November 16, Kevin requested Vercel analytics. Web Analytics was enabled on the linked `portfolio` Vercel project, and the root layout now includes the analytics component. Production collection still needs the integration deployed and a live visit verified.
+On November 16, Kevin requested Vercel analytics. Web Analytics was enabled on the linked `portfolio` Vercel project, and the root layout now includes the analytics component. `yarn lint`, `yarn test`, and `yarn build` passed. [PR #3](https://github.com/ktpei/portfolio/pull/3) remains open because Vercel rejected the deployment with “Account is blocked.” Resolve the Vercel account block, retry deployment, and verify a live visit before claiming production collection works.
 
 The portfolio started as a conventional content-driven page. In September 2026, Kevin explored a more interactive desktop and a 3D apartment concept, then chose a single low-key Stickies theme. He wanted a portfolio with its own personality and a quick path to the work, projects, and contact notes. The two desktops became the portfolio notes on the left and the public Ideas Board on the right. The edge arrows are unboxed and the board also has a direct route.
 
