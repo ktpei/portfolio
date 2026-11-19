@@ -35,4 +35,6 @@ Use the native app and the owner's screenshot for the exact surface under review
 
 ## Release checks
 
+Vercel Web Analytics is mounted once in `src/app/layout.tsx` using the Next.js integration. After deployment, confirm the analytics script loads and page views appear in the Vercel project's Analytics dashboard.
+
 Run `yarn lint`, `yarn test`, and `yarn build`. For board changes, also follow the [Convex and browser checks](docs/board.md#data-and-verification). Review the [chat decisions and handoff](context.md) before changing copy, typography, or a macOS interaction that has already been revised.
